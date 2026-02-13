@@ -42,7 +42,7 @@
             </form>
             {% else %}
             <a href="{% url 'pages:login' %}" class="btn btn-outline-light me-3">Sign In</a>
-            <a href="#" class="btn btn-primary">Sign Up</a>
+            <a href="{% url 'pages:signup' %}" class="btn btn-primary">Sign Up</a>
             {% endif %}
           </div>
         </div>
