@@ -3,6 +3,14 @@
 {% block title %}Welcome | Home{% endblock %}
 
 {% block content %}
-<h1>Hello, World!</h1>
-<p>This content is injected into the base template.</p>
+<h1>Welcome!</h1>
+{% if user.is_authenticated %}
+<p>You are logged in as {{ user.email }}</p>
+<form method="post" action="{% url 'pages:logout' %}">
+  {% csrf_token %}
+  <button type="submit">Log Out</button>
+</form>
+{% else %}
+<p>You are not logged in please login <a href="{% url 'pages:login' %}">sign in</a> to access dashboard</p>
+{% endif %}
 {% endblock %}
