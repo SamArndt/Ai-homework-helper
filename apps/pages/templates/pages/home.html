@@ -5,12 +5,9 @@
 {% block content %}
 <h1>Welcome!</h1>
 {% if user.is_authenticated %}
-<p>You are logged in as {{ user.email }}</p>
-<form method="post" action="{% url 'pages:logout' %}">
-  {% csrf_token %}
-  <button type="submit">Log Out</button>
-</form>
+<p>You are logged in as {{ user.email }}.</p>
+<p>Go to your <a href="{% url 'pages:dashboard' %}">dashboard</a>.</p>
 {% else %}
-<p>You are not logged in please login <a href="{% url 'pages:login' %}">sign in</a> to access dashboard</p>
+<p>You are not logged in. Please <a href="{% url 'pages:login' %}">sign in</a> to access your dashboard.</p>
 {% endif %}
 {% endblock %}
