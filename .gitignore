@@ -15,5 +15,4 @@ docs/target/
 .idea/
 .vscode/
 .cache/
-apps/pages/node_modules/
-apps/pages/static/js/bundle.js
+db.sqlite3

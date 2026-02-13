@@ -3,9 +3,16 @@
 
 import os
 import sys
+from pathlib import Path
 
 
 def main():
+    # Build paths inside the project like this: BASE_DIR / 'subdir'.
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
+    # Add the 'apps' directory to the Python path
+    sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
+
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     try:
