@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
 import Login from './Login'
+import Signup from './Signup'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -43,6 +44,7 @@ function App() {
         ) : (
           <>
             <Link to="/login">Login</Link>
+            <Link to="/signup">Sign Up</Link>
           </>
         )}
       </nav>
@@ -51,6 +53,7 @@ function App() {
         <Route path="/" element={<h1>Home Page</h1>} />
         {/* Pass the setter to Login so it can update the Navbar immediately */}
         <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   )
