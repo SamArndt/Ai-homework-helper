@@ -41,14 +41,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'corsheaders',
+    "rest_framework",
+    "rest_framework.authtoken",  # Required for Token-based login
+    "corsheaders",
     "users",
     "pages",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', # MUST be at the top
-    'django.middleware.common.CommonMiddleware',
+    "corsheaders.middleware.CorsMiddleware", # MUST be at the top
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -148,3 +150,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",  # For API
+        "rest_framework.authentication.SessionAuthentication", # For Web App
+    ],
+}

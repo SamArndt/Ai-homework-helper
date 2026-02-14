@@ -69,3 +69,11 @@ To run the automated test suite:
 ```bash
 pytest  # Or python manage.py test
 ````
+
+1. Call the apiCall the api
+
+```curl
+  postman request POST 'http://localhost:8000/api/v1/login/' \
+    --form 'email=joe@example.com' \
+    --form 'password=joespassword'
+```
