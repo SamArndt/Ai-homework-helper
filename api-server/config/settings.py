@@ -60,13 +60,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-
-
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
@@ -156,4 +149,19 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",  # For API
         "rest_framework.authentication.SessionAuthentication", # For Web App
     ],
+
 }
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# If you are using django sessions for login we need this too
+CORS_ALLOW_CREDENTIALS = True
