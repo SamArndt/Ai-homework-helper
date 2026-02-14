@@ -1,34 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
+import Login from './Login'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // Check for token on initial load
+  useEffect(() => {
+    const token = localStorage.getItem('authToken')
+    if (token) {
+      setIsAuthenticated(true)
+      axios.defaults.headers.common['Authorization'] = `Token ${token}`
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken')
+    delete axios.defaults.headers.common['Authorization']
+    setIsAuthenticated(false)
+    window.location.href = '/login' // Hard redirect to clear state
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Router>
+      <nav
+        style={{
+          padding: '1rem',
+          background: '#f4f4f4',
+          display: 'flex',
+          gap: '15px',
+        }}
+      >
+        <Link to="/">Home</Link>
+
+        {/* Conditional Rendering based on state */}
+        {isAuthenticated ? (
+          <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
+            Logout
+          </button>
+        ) : (
+          <>
+            <Link to="/login">Login</Link>
+          </>
+        )}
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<h1>Home Page</h1>} />
+        {/* Pass the setter to Login so it can update the Navbar immediately */}
+        <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
+      </Routes>
+    </Router>
   )
 }
 
