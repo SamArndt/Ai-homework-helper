@@ -1,7 +1,11 @@
 # Create ai_homework_helper database. Prompts for MySQL root password.
 # Run from repo root: .\api-server\scripts\create_mysql_db.ps1
+# Optional: set $env:MYSQL_EXE to your mysql.exe path (e.g. "C:\Program Files\MySQL\MySQL Server 9.6\bin\mysql.exe")
 
-$mysqlExe = "C:\Program Files\MySQL\MySQL Server 9.6\bin\mysql.exe"
+$mysqlExe = $env:MYSQL_EXE
+if (-not $mysqlExe -or -not (Test-Path $mysqlExe)) {
+    $mysqlExe = "C:\Program Files\MySQL\MySQL Server 9.6\bin\mysql.exe"
+}
 if (-not (Test-Path $mysqlExe)) {
     $mysqlExe = "mysql.exe"  # fallback if on PATH
 }
