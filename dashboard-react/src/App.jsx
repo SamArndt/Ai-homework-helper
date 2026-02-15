@@ -1,14 +1,17 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Link, Route, BrowserRouter as Router, Routes, Navigate, useLocation } from 'react-router-dom'
 import './App.css'
 import Login from './Login'
 import Signup from './Signup'
+import Dashboard from './Dashboard'
+import ProtectedRoute from './ProtectedRoute'
 
-function App() {
+function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const location = useLocation()
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup'
 
-  // Check for token on initial load
   useEffect(() => {
     const token = localStorage.getItem('authToken')
     if (token) {
@@ -21,40 +24,59 @@ function App() {
     localStorage.removeItem('authToken')
     delete axios.defaults.headers.common['Authorization']
     setIsAuthenticated(false)
-    window.location.href = '/login' // Hard redirect to clear state
+    window.location.href = '/login'
   }
 
   return (
-    <Router>
-      <nav
-        style={{
-          padding: '1rem',
-          background: '#f4f4f4',
-          display: 'flex',
-          gap: '15px',
-        }}
-      >
-        <Link to="/">Home</Link>
-
-        {/* Conditional Rendering based on state */}
-        {isAuthenticated ? (
-          <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
-            Logout
-          </button>
-        ) : (
-          <>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-          </>
-        )}
-      </nav>
+    <>
+      {!isAuthPage && (
+        <nav
+          style={{
+            padding: '1rem',
+            background: '#f4f4f4',
+            display: 'flex',
+            gap: '15px',
+          }}
+        >
+          <Link to="/">Home</Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/dashboard">Dashboard</Link>
+              <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/signup">Sign Up</Link>
+            </>
+          )}
+        </nav>
+      )}
 
       <Routes>
         <Route path="/" element={<h1>Home Page</h1>} />
-        {/* Pass the setter to Login so it can update the Navbar immediately */}
         <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
         <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   )
 }
