@@ -9,6 +9,7 @@ const Login = ({ setAuth }) => {
     password: '',
   })
   const [errorMessage, setErrorMessage] = useState('')
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -63,7 +64,7 @@ const Login = ({ setAuth }) => {
         </div>
         <div style={{ marginBottom: '10px' }}>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             name="password"
             placeholder="Password"
             value={formData.password}
@@ -71,6 +72,18 @@ const Login = ({ setAuth }) => {
             style={{ width: '100%', padding: '8px' }}
             required
           />
+         
+          <label style={{display : 'block', marginTop: '8px'}}>
+            <input
+            type='checkbox'
+            checked={showPassword}
+            onChange={(e) => setShowPassword(e.target.checked)}
+
+            />
+            {' '}
+            Show Password
+          </label>
+
         </div>
         <button type="submit" style={{ width: '100%', padding: '10px' }}>
           Login
