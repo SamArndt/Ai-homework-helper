@@ -19,7 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("pages.urls")),
 
     # DRF API Endpoints with versioned prefix
     path('api/v1/', include("users.urls")),

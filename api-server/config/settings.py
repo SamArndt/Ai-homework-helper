@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",  # Required for Token-based login
     "corsheaders",
     "users",
-    "pages",
 ]
 
 MIDDLEWARE = [
@@ -92,11 +91,6 @@ DATABASES = {
 }
 
 
-LOGIN_REDIRECT_URL = "/" # Redirect here after successful login
-
-# Redirect to home page after logout
-LOGOUT_REDIRECT_URL = "/"
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -134,10 +128,6 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# Tell Django to look for a global 'static/' folder in your project root
-STATICFILES_DIRS = [
-    BASE_DIR / "apps/pages/static",
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
