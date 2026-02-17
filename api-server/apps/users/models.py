@@ -2,14 +2,27 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from .managers import CustomUserManager
 
+
 class User(AbstractUser):
-    username = None # Remove the username field
-    email = models.EmailField(unique=True) # Make email unique
+    """Custom user: email as identifier, role, profile (aligned with Capstone schema)."""
+    class Role(models.TextChoices):
+        STUDENT = "student", "Student"
+        TEACHER = "teacher", "Teacher"
+
+    username = None
+    email = models.EmailField(unique=True)
+    role = models.CharField(
+        max_length=20,
+        choices=Role.choices,
+        default=Role.STUDENT,
+    )
+    image = models.URLField(blank=True, default="")
+    email_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = [] # Email and Password are required by default
+    REQUIRED_FIELDS = []
 
-    objects = CustomUserManager() # Point to our custom user manager
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.email

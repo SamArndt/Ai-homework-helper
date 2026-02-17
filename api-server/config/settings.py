@@ -17,6 +17,13 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load .env from project root (api-server/)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / ".env")
+except ImportError:
+    pass
+
 # Add the 'apps' directory to the Python path
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 
@@ -45,7 +52,6 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",  # Required for Token-based login
     "corsheaders",
     "users",
-    "pages",
 ]
 
 MIDDLEWARE = [
@@ -83,13 +89,27 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+_db_engine = os.environ.get("DB_ENGINE", "sqlite").lower()
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if _db_engine == "mysql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.environ.get("MYSQL_DATABASE", "ai_homework_helper"),
+            "USER": os.environ.get("MYSQL_USER", "root"),
+            "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
+            "HOST": os.environ.get("MYSQL_HOST", "127.0.0.1"),
+            "PORT": os.environ.get("MYSQL_PORT", "3306"),
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 LOGIN_REDIRECT_URL = "/" # Redirect here after successful login
@@ -133,11 +153,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
-
-# Tell Django to look for a global 'static/' folder in your project root
-STATICFILES_DIRS = [
-    BASE_DIR / "apps/pages/static",
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
