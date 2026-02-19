@@ -26,6 +26,10 @@ class LogFormatter(logging.Formatter):
         # Let base formatter build the normal message first
         formatted_message = super().format(record)
 
+        # Remove request id from message if no id given
+        # Based on format string: "format": " %(asctime)s - %(levelname)-5s [%(name)s] request_id=%(request_id)s, %(levelname)s | %(message)s"
+        formatted_message = formatted_message.replace("request_id=,", "")
+
         # Tint the entire line
         return f"{color}{emoji}  {formatted_message}{self.RESET}"
     
@@ -36,6 +40,7 @@ def log(message):
     logger.debug(message)
 
 def log(message, level=logging.INFO):
+    # Process logging based on level
     match(level):
         case logging.DEBUG:
             logger.debug(message)

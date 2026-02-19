@@ -34,10 +34,15 @@ except ImportError:
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {
+            "()": "request_id.logging.RequestIdFilter"
+        }
+    },
     "formatters": {
         "colored": {
             "()": "scripts.utilities.filtered_logs.LogFormatter",
-            "format": " %(levelname)s | %(message)s",
+            "format": " %(asctime)s - %(levelname)-5s [%(name)s] request_id=%(request_id)s, %(levelname)s | %(message)s",
         },
     },
     "handlers": {
@@ -45,6 +50,7 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "colored",
             "level": LOG_LEVEL,
+            "filters": ["request_id"],
         },
     },
     "loggers": {
@@ -88,10 +94,12 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",  # Required for Token-based login
     "corsheaders",
     "users",
+    "request_id",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware", # MUST be at the top
+    "request_id.middleware.RequestIdMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
