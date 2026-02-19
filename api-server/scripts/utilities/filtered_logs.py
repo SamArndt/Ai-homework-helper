@@ -48,3 +48,8 @@ def log(message, level=logging.INFO):
         case logging.CRITICAL:
             logger.critical(message)
     
+def log(message, request_id=None, level=logging.INFO):
+    if request_id:
+        log(f"[{request_id}] {message}", level)
+    else:
+        log(message, level)
