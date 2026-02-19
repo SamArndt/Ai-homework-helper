@@ -8,8 +8,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'first_name', 'last_name', 'role', 'image')
-        extra_kwargs = {'role': {'required': False}, 'image': {'required': False}}
+        fields = ('email', 'password', 'first_name', 'last_name')
 
     def create(self, validated_data):
         # Use create_user to handle password hashing correctly
