@@ -7,7 +7,6 @@ class User(AbstractUser):
     """Custom user: email as identifier, profile """
     username = None
     email = models.EmailField(unique=True)
-    email_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -16,4 +15,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-
