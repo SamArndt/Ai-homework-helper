@@ -17,12 +17,48 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load log level filtering preference from .env
+LOG_LEVEL = "DEBUG"  # Default log level
+
 # Load .env from project root (api-server/)
 try:
-    from dotenv import load_dotenv
+    from dotenv import load_dotenv  
     load_dotenv(BASE_DIR / ".env")
+    LOG_LEVEL = os.getenv("LOG_LEVEL", LOG_LEVEL).upper()
 except ImportError:
     pass
+
+
+
+# Set up logger to use filtered logs
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "colored": {
+            "()": "scripts.utilities.filtered_logs.LogFormatter",
+            "format": " %(levelname)s | %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "colored",
+            "level": LOG_LEVEL,
+        },
+    },
+    "loggers": {
+        "django.utils.autoreload": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": LOG_LEVEL,
+    },
+}
 
 # Add the 'apps' directory to the Python path
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
