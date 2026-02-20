@@ -98,3 +98,23 @@ Then open the URL shown (e.g. http://localhost:5173).
 - **Frontend:** All UI and styling live in `dashboard-react/`. Use a separate `.css` (or module) per feature; call the API at `/api/...` (Vite proxies to Django).
 - **Secrets:** Never commit `.env`. It's in `.gitignore`. Use `.env.example` as a template.
 - **Clone URL:** Replace the placeholder `git clone` URL with your real repo URL when you share the project.
+
+---
+
+## Notes for New Contributors (Post-Merge Summary)
+
+- Backend: Django (API)
+- Frontend: React (UI)
+
+### Brief Overview
+
+- Django runs on: http://127.0.0.1:8000
+- React runs on: http://localhost:5173
+- React send requests to `/api/...`
+- Vite forwards requests to Django
+
+### Error Resolution
+
+- Run Django first
+- Then run React
+- Confirm ports (8000 & 5173)
