@@ -1,9 +1,10 @@
 import axios from 'axios'
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import './Auth.css'
+import { AuthContext } from './context/AuthContext'
 
-const Login = ({ setAuth }) => {
+const Login = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
@@ -16,19 +17,17 @@ const Login = ({ setAuth }) => {
     setFormData({ ...formData, [name]: value })
   }
 
+  const { login } = useContext(AuthContext)
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setErrorMessage('')
 
     try {
       const response = await axios.post('/api/v1/login/', formData)
-      const token = response.data.token
+      await login(response.data.token)
 
-      localStorage.setItem('authToken', token)
-      axios.defaults.headers.common['Authorization'] = `Token ${token}`
-
-      setAuth(true)
-      navigate('/')
+      navigate('/dashboard')
     } catch (error) {
       console.error('Login error:', error)
       setErrorMessage(

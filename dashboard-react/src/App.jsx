@@ -1,31 +1,24 @@
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { Link, Route, BrowserRouter as Router, Routes, Navigate, useLocation } from 'react-router-dom'
+import { useContext } from 'react'
+import {
+  Link,
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation,
+} from 'react-router-dom'
 import './App.css'
-import Login from './Login'
-import Signup from './Signup'
+import { AuthContext, AuthProvider } from './context/AuthContext'
 import Dashboard from './Dashboard'
+import Login from './Login'
 import ProtectedRoute from './ProtectedRoute'
+import Signup from './Signup'
 
 function AppContent() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user, logout } = useContext(AuthContext)
   const location = useLocation()
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup'
-
-  useEffect(() => {
-    const token = localStorage.getItem('authToken')
-    if (token) {
-      setIsAuthenticated(true)
-      axios.defaults.headers.common['Authorization'] = `Token ${token}`
-    }
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken')
-    delete axios.defaults.headers.common['Authorization']
-    setIsAuthenticated(false)
-    window.location.href = '/login'
-  }
+  const isAuthPage =
+    location.pathname === '/login' || location.pathname === '/signup'
 
   return (
     <>
@@ -39,10 +32,10 @@ function AppContent() {
           }}
         >
           <Link to="/">Home</Link>
-          {isAuthenticated ? (
+          {user ? (
             <>
               <Link to="/dashboard">Dashboard</Link>
-              <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
+              <button onClick={logout} style={{ cursor: 'pointer' }}>
                 Logout
               </button>
             </>
@@ -57,7 +50,7 @@ function AppContent() {
 
       <Routes>
         <Route path="/" element={<h1>Home Page</h1>} />
-        <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/dashboard"
@@ -75,9 +68,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   )
 }
 
