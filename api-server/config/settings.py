@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",  # Required for Token-based login
     "corsheaders",
     "users",
+    "ai",
     "request_id",
 ]
 
