@@ -1,4 +1,5 @@
 import {NavLink, Link} from 'react-router-dom';
+import './Navbar.css';
 
 const navPages = [
     {to: '/', label: 'Home'},
@@ -14,7 +15,7 @@ export default function Navbar({isAuthenticated, onLogout}) {
 
     return(
     <div className='navbar'>
-        <div className='navbarTitle'> Navbar </div>
+        <div className='navbarTitle'> Navigator </div>
 
         <nav className='navbarNav' aria-label="Navbar Navigation">
             {navPages.map((item) => (
@@ -27,8 +28,6 @@ export default function Navbar({isAuthenticated, onLogout}) {
                         className={({isActive}) => `navbarLink ${isActive ? 'navbarLinkOn' : ''}`}
                     >
                         {item.label}
-                        {/* Added temp spacing for this commit */}
-                        {" "}
                     </NavLink>
             ))}
         </nav>

@@ -1,0 +1,220 @@
+/* Globals */
+:root {
+
+    /* Layout    */
+    --navbar-height: calc(100vh - 80px);
+    --navbar-padding: 18px;
+    --navbar-top-offset: 20px;
+
+
+    /* Type    */
+    --navbar-font-family: Roboto, Arial, sans-serif;
+    --navbar-text: #1f2937;
+
+    --navbar-title-font-size: 18px;
+    --navbar-title-font-weight: 700;
+
+    --navbar-link-font-size: 14px;
+    --navbar-link-font-weight: 600;
+
+    --navbar-auth-font-size: 12px;
+    --navbar-auth-font-weight: 700;
+
+    /* Spacers   */
+    --navbar-space-1: 5px;
+    --navbar-space-2: 8px;
+    --navbar-space-3: 11px;
+    --navbar-space-4: 14px;
+
+
+    /* Borders  */
+    --navbar-border: #e9e6f3;
+    --navbar-border-active: #d9d2ff;
+    --navbar-shadow: 0 12px 30px #0000001a;
+
+    /* Coloring  */
+    --navbar-background: #ffffff;
+    --navbar-active-background: #f0edff;
+    --navbar-fallback: #6d53fc;
+    --navbar-alt: #6d53fc;
+
+    /* Shape Alterations */
+    --navbar-radius: 18px;
+    --navbar-indvRadius: 18px;
+    --navbar-dot: 18px;
+
+
+
+
+}
+
+/* Overall Container  */
+.navbar {
+
+    font-family: var(--navbar-font-family);
+    width: var(--navbar-width);
+    height: var(--navbar-height);
+    top: var(--navbar-top-offset);
+    background: var(--navbar-background);
+    border: 1px solid var(--navbar-border);
+    border-radius: var(--navbar-radius);
+    box-shadow: var(--navbar-shadow);
+
+    position: fixed;
+    top: var(--navbar-top-offset);
+    left: var(--layout-edge);
+
+
+
+    display: flex;
+    flex-direction: column;
+    padding: var(--navbar-padding);
+
+
+
+
+
+}
+
+/* Title */
+.navbarTitle {
+    font-size: var(--navbar-title-font-size);
+    font-weight: var(--navbar-title-font-weight);
+    color: var(--navbar-text);
+
+
+    display: flex;
+    align-items: center;
+    gap: var(--navbar-space-3);
+    margin-bottom: var(--navbar-space-4);
+    
+
+}
+
+/* List */
+.navbarNav {
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--navbar-space-2);
+    padding: var(--navbar-space-2) 0;
+
+    overflow: auto;
+}
+
+
+/* Links  */
+.navbarLink {
+    color: var(--navbar-fallback);
+
+    border: 1px solid #00000000;
+    border-radius: var(--navbar-indvRadius);
+
+    font-size: var(--navbar-link-font-size);
+    font-weight: var(--navbar-link-font-weight);
+
+    padding: var(--navbar-space-3)
+             var(--navbar-space-4);
+    
+
+    display: flex;
+    align-items: center;
+
+
+
+
+
+
+    text-decoration: none;
+
+}
+.navbarLink:hover {
+    opacity: 0.4;
+    background: #f7f5ff;
+    
+    border-color: var(--navbar-border-active);
+
+    transform: translateX(2px);
+}
+
+
+
+
+.navbarLinkOn {
+
+    color: var(--navbar-alt);
+    background: var(--navbar-active-background);
+
+    border: 1px solid var(--navbar-border-active);
+    border-radius: var(--navbar-indvRadius);
+   
+
+}
+
+
+
+.navbarAuth {
+    padding-top: var(--navbar-space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--navbar-space-4);
+    border-top: 1px solid var(--navbar-border);
+
+    margin-top: auto;
+    justify-content: center;
+    text-align: center;
+
+
+}
+
+ /* NOT combined with button for now */
+
+.navbarAuth a {
+
+    width: 85px;
+    justify-content: center;
+    box-sizing: border-box;
+
+    color: var(--navbar-alt);
+    background: #f0edff;
+
+    font-family: var(--navbar-font-family);
+    font-size:var(--navbar-auth-font-size);
+    font-weight: var(--navbar-auth-font-weight);
+
+    border: 1px solid var(--navbar-border-active);
+    border-radius: var(--navbar-indvRadius);
+
+
+    padding: var(--navbar-space-3);
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+
+
+
+
+
+}
+
+.navbarAuth button {
+
+    width: 85px;
+    justify-content: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    background: var(--navbar-active-background);
+    color: var(--navbar-alt);
+
+    font-family: var(--navbar-font-family);
+    font-size:var(--navbar-auth-font-size);
+    font-weight: var(--navbar-auth-font-weight);
+    
+
+    border: 1px solid var(--navbar-border-active);
+    border-radius: var(--navbar-indvRadius);
+
+
+    padding: var(--navbar-space-3);
+
+}

@@ -1,8 +1,71 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+:root {
+
+/* General Layout */ 
+ --layout-edge: 20px;
+ --layout-main-padding: 24px;
+ --layout-main-height: calc(100vh - 40px);
+
+
+ --navbar-width: 250px;
+
+
+/* Colors */
+ --layout-background: #f5f3ff;
+ --layout-front: #ffffffb3;
+ --layout-border: #e9e6f3;
+
+/* Alterations */
+--layout-radius: 18px;
+--layout-shadow: 0 10px 24px #00000014;
+
+
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+
+body {
+  margin: 0;
+  background: var(--layout-background);
+}
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  text-align: left;
+
+  gap: var(--layout-edge);
+
+  padding: var(--layout-edge);
+  padding-left: calc(var(--layout-edge) + var(--navbar-width) + var(--layout-edge));
+}
+
+.side {
+  width: var(--navbar-width);
+  flex: 0 0 var(--navbar-width);
+}
+
+
+.main {
+  flex: 1 1 auto;
+  min-width: 0;
+
+
+  height: var(--layout-main-height);
+
+
+  background: var(--layout-front);
+
+  border: 1px solid var(--layout-border);
+  border-radius: var(--layout-radius);
+  box-shadow: var(--layout-shadow);
+
+
+  padding: var(--layout-main-padding);
+  overflow: auto;
+  
 }
 
 .logo {
