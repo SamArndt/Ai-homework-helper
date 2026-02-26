@@ -23,44 +23,70 @@ function AppContent() {
   return (
     <>
       {!isAuthPage && (
-        <nav
-          style={{
-            padding: '1rem',
-            background: '#f4f4f4',
-            display: 'flex',
-            gap: '15px',
-          }}
-        >
-          <Link to="/">Home</Link>
-          {user ? (
-            <>
-              <Link to="/dashboard">Dashboard</Link>
-              <button onClick={logout} style={{ cursor: 'pointer' }}>
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login">Login</Link>
-              <Link to="/signup">Sign Up</Link>
-            </>
-          )}
+        <nav className="app-nav">
+          <Link to="/" className="nav-brand">
+            MyApp
+          </Link>
+          <div className="nav-links">
+            {user ? (
+              <>
+                <Link to="/dashboard" className="nav-link">
+                  Dashboard
+                </Link>
+                <button onClick={logout} className="btn-nav-logout">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="nav-link">
+                  Login
+                </Link>
+                <Link to="/signup" className="btn-nav-primary">
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
         </nav>
       )}
 
       <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
+        <Route
+          path="/"
+          element={
+            <div className="home-page">
+              <div className="deco-circle deco-1" />
+              <div className="deco-circle deco-2" />
+              <div className="home-content">
+                <p className="home-eyebrow">Welcome</p>
+                <h1 className="home-title">Home Page</h1>
+                <p className="home-sub">
+                  Your journey starts here. Sign in or create an account to get
+                  started.
+                </p>
+                {!user && (
+                  <Link to="/login" className="home-cta">
+                    Get Started
+                  </Link>
+                )}
+              </div>
+            </div>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <div className="page-wrapper">
+                <Dashboard />
+              </div>
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   )
