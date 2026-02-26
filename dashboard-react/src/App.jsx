@@ -4,6 +4,10 @@ import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
 import Login from './Login'
 import Signup from './Signup'
+import NavbarLayout from './components/NavbarLayout'
+import Assignments from './pages/Assignments'
+import Study from './pages/Study'
+import Settings from './pages/Settings'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -26,36 +30,29 @@ function App() {
 
   return (
     <Router>
-      <nav
-        style={{
-          padding: '1rem',
-          background: '#f4f4f4',
-          display: 'flex',
-          gap: '15px',
-        }}
-      >
-        <Link to="/">Home</Link>
-
-        {/* Conditional Rendering based on state */}
-        {isAuthenticated ? (
-          <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
-            Logout
-          </button>
-        ) : (
-          <>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-          </>
-        )}
-      </nav>
-
       <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
-        {/* Pass the setter to Login so it can update the Navbar immediately */}
+
+
         <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
         <Route path="/signup" element={<Signup />} />
+
+        <Route 
+          element={
+            <NavbarLayout isAuthenticated={isAuthenticated} onLogout={handleLogout}/>
+          }
+          >
+
+            <Route path='/' element={<h1>Home Page</h1>} />
+            <Route path='/assignments' element={<Assignments/>} />
+            <Route path='/study' element={<Study/>} />
+            <Route path='/settings' element={<Settings/>} />
+
+          </Route>
       </Routes>
-    </Router>
+  </Router>
+
+
+      
   )
 }
 
