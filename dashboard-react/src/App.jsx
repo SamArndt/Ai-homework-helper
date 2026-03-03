@@ -13,6 +13,7 @@ import Dashboard from './Dashboard'
 import Login from './Login'
 import ProtectedRoute from './ProtectedRoute'
 import Signup from './Signup'
+import Study from './study'
 
 function AppContent() {
   const { user, logout } = useContext(AuthContext)
@@ -25,13 +26,16 @@ function AppContent() {
       {!isAuthPage && (
         <nav className="app-nav">
           <Link to="/" className="nav-brand">
-            Ai Homework Helper
+            MyApp
           </Link>
           <div className="nav-links">
             {user ? (
               <>
                 <Link to="/dashboard" className="nav-link">
                   Dashboard
+                </Link>
+                <Link to="/study" className="nav-link">
+                  Study
                 </Link>
                 <button onClick={logout} className="btn-nav-logout">
                   Logout
@@ -82,6 +86,16 @@ function AppContent() {
             <ProtectedRoute>
               <div className="page-wrapper">
                 <Dashboard />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/study"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <Study />
               </div>
             </ProtectedRoute>
           }
