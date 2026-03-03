@@ -25,7 +25,7 @@ function AppContent() {
       {!isAuthPage && (
         <nav className="app-nav">
           <Link to="/" className="nav-brand">
-            MyApp
+            Ai Homework Helper
           </Link>
           <div className="nav-links">
             {user ? (
