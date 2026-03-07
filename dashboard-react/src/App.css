@@ -209,6 +209,65 @@ body {
   transform: translateY(-1px);
 }
 
+/* ─── Search Bar Stuff ─── */
+
+.sb-container {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 16px;
+
+}
+.sb {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+  
+
+}
+
+.input {
+  flex: 1;
+
+  color: #ffffff;
+  background: #ffffff10;
+
+  border: 1px solid #8b5cf6;
+  border-radius: 12px;
+
+ 
+  padding: 10px 14px;
+
+
+}
+.input::placeholder {
+  color: #ffffffe5;
+}
+
+.sb-button {
+
+  color: #ffffff;
+  background: #7c3aed;
+
+  border: none;
+  padding: 12px 16px;
+
+  cursor: pointer;
+  
+
+}
+.sb-button:hover {
+  background: #6d28d9;
+}
+
+
+
+
+
+
+
+
 /* ─── Page wrapper ─── */
 .page-wrapper {
   padding-top: 64px;

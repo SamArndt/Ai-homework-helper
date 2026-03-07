@@ -14,6 +14,7 @@ import Login from './Login'
 import ProtectedRoute from './ProtectedRoute'
 import Signup from './Signup'
 import Study from './study'
+import SearchBar from './components/SearchBar'
 
 function AppContent() {
   const { user, logout } = useContext(AuthContext)
@@ -28,6 +29,9 @@ function AppContent() {
           <Link to="/" className="nav-brand">
             MyApp
           </Link>
+
+          <SearchBar />
+        
           <div className="nav-links">
             {user ? (
               <>
