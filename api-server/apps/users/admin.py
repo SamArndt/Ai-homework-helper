@@ -1,14 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, UserPreferences
 from .forms import CustomUserCreationForm, CustomUserChangeForm
+
+class UserSettingsInline(admin.StackedInline):
+    model = UserPreferences
+    max_num = 1
+    can_delete = False
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User
 
-    list_display = ('email', 'is_staff', 'is_active',)
+    inlines = [UserSettingsInline]
+
+    list_display = ('email', 'is_staff', 'is_active')
     ordering = ('email',)
 
     fieldsets = (

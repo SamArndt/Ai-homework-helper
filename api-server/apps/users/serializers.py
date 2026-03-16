@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
+from .models import UserPreferences
 
 User = get_user_model()
 
@@ -8,12 +9,17 @@ class UserSignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'first_name', 'last_name',)
+        fields = ('email', 'password', 'first_name', 'last_name')
 
     def create(self, validated_data):
         # Use create_user to handle password hashing correctly
         return User.objects.create_user(**validated_data)
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name']
+        
 class CustomAuthTokenSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(style={'input_type': 'password'})
@@ -32,3 +38,8 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+class UserPreferencesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPreferences
+        fields = ['dark_mode', 'notifications_enabled', 'auto_email_reports']

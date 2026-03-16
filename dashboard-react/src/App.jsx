@@ -1,61 +1,118 @@
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { useContext } from 'react'
+import {
+  Link,
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation,
+} from 'react-router-dom'
 import './App.css'
+import { AuthContext, AuthProvider } from './context/AuthContext'
+import Dashboard from './Dashboard'
 import Login from './Login'
+import ProtectedRoute from './ProtectedRoute'
 import Signup from './Signup'
+import Study from './study'
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  // Check for token on initial load
-  useEffect(() => {
-    const token = localStorage.getItem('authToken')
-    if (token) {
-      setIsAuthenticated(true)
-      axios.defaults.headers.common['Authorization'] = `Token ${token}`
-    }
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken')
-    delete axios.defaults.headers.common['Authorization']
-    setIsAuthenticated(false)
-    window.location.href = '/login' // Hard redirect to clear state
-  }
+function AppContent() {
+  const { user, logout } = useContext(AuthContext)
+  const location = useLocation()
+  const isAuthPage =
+    location.pathname === '/login' || location.pathname === '/signup'
 
   return (
-    <Router>
-      <nav
-        style={{
-          padding: '1rem',
-          background: '#f4f4f4',
-          display: 'flex',
-          gap: '15px',
-        }}
-      >
-        <Link to="/">Home</Link>
-
-        {/* Conditional Rendering based on state */}
-        {isAuthenticated ? (
-          <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
-            Logout
-          </button>
-        ) : (
-          <>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-          </>
-        )}
-      </nav>
+    <>
+      {!isAuthPage && (
+        <nav className="app-nav">
+          <Link to="/" className="nav-brand">
+            MyApp
+          </Link>
+          <div className="nav-links">
+            {user ? (
+              <>
+                <Link to="/dashboard" className="nav-link">
+                  Dashboard
+                </Link>
+                <Link to="/study" className="nav-link">
+                  Study
+                </Link>
+                <button onClick={logout} className="btn-nav-logout">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="nav-link">
+                  Login
+                </Link>
+                <Link to="/signup" className="btn-nav-primary">
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </nav>
+      )}
 
       <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
-        {/* Pass the setter to Login so it can update the Navbar immediately */}
-        <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
+        <Route
+          path="/"
+          element={
+            <div className="home-page">
+              <div className="deco-circle deco-1" />
+              <div className="deco-circle deco-2" />
+              <div className="home-content">
+                <p className="home-eyebrow">Welcome</p>
+                <h1 className="home-title">Home Page</h1>
+                <p className="home-sub">
+                  Your journey starts here. Sign in or create an account to get
+                  started.
+                </p>
+                {!user && (
+                  <Link to="/login" className="home-cta">
+                    Get Started
+                  </Link>
+                )}
+              </div>
+            </div>
+          }
+        />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <Dashboard />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/study"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <Study />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </Router>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   )
 }
 

@@ -1,16 +1,34 @@
-# React + Vite
+# Dashboard (React frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+All UI for Ai Homework Helper. Login, signup, dashboard, and any new screens live here. It talks to the Django API only (no server-rendered pages from Django).
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+From repo root:
 
-## React Compiler
+```bash
+npm start
+```
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Or from this folder:
 
-## Expanding the ESLint configuration
+```bash
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Then open **http://localhost:5173**.
+
+**Requirement:** The Django API must be running on **http://127.0.0.1:8000**. Vite proxies `/api` to that server, so login/signup and other API calls only work when both are running.
+
+## Structure
+
+- **Components:** `src/*.jsx` (e.g. `Login.jsx`, `Signup.jsx`, `Dashboard.jsx`).
+- **Styling:** Use a `.css` file per feature (e.g. `Auth.css`) and import it in the component. Keep all styling in this app.
+- **API calls:** Use `axios` or `fetch` to `/api/v1/...`. The dev server proxies `/api` to Django. Send `Authorization: Token <token>` for protected endpoints.
+- **Routes:** Defined in `App.jsx`. Add new routes and links as you add features.
+
+## Scripts
+
+- `npm run dev` — Start Vite dev server (with proxy).
+- `npm run build` — Production build.
+- `npm run preview` — Preview production build locally.

@@ -1,0 +1,12 @@
+{
+  "name": "ai-homework-helper",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Unified ecosystem: Django backend + React dashboard",
+  "scripts": {
+    "start": "npm run dev --prefix dashboard-react",
+    "dev": "npm run dev --prefix dashboard-react",
+    "build": "npm run build --prefix dashboard-react",
+    "lint": "npm run lint --prefix dashboard-react"
+  }
+}

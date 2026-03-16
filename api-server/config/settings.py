@@ -17,6 +17,55 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load log level filtering preference from .env
+LOG_LEVEL = "DEBUG"  # Default log level
+
+# Load .env from project root (api-server/)
+try:
+    from dotenv import load_dotenv  
+    load_dotenv(BASE_DIR / ".env")
+    LOG_LEVEL = os.getenv("LOG_LEVEL", LOG_LEVEL).upper()
+except ImportError:
+    pass
+
+
+
+# Set up logger to use filtered logs
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {
+            "()": "request_id.logging.RequestIdFilter"
+        }
+    },
+    "formatters": {
+        "colored": {
+            "()": "scripts.utilities.filtered_logs.LogFormatter",
+            "format": " %(asctime)s - %(levelname)-5s [%(name)s] request_id=%(request_id)s, %(levelname)s | %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "colored",
+            "level": LOG_LEVEL,
+            "filters": ["request_id"],
+        },
+    },
+    "loggers": {
+        "django.utils.autoreload": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": LOG_LEVEL,
+    },
+}
+
 # Add the 'apps' directory to the Python path
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 
@@ -45,11 +94,12 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",  # Required for Token-based login
     "corsheaders",
     "users",
-    "pages",
+    "request_id",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware", # MUST be at the top
+    "request_id.middleware.RequestIdMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -83,13 +133,27 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+_db_engine = os.environ.get("DB_ENGINE", "sqlite").lower()
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if _db_engine == "mysql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.environ.get("MYSQL_DATABASE", "ai_homework_helper"),
+            "USER": os.environ.get("MYSQL_USER", "root"),
+            "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
+            "HOST": os.environ.get("MYSQL_HOST", "127.0.0.1"),
+            "PORT": os.environ.get("MYSQL_PORT", "3306"),
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 LOGIN_REDIRECT_URL = "/" # Redirect here after successful login
@@ -133,11 +197,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
-
-# Tell Django to look for a global 'static/' folder in your project root
-STATICFILES_DIRS = [
-    BASE_DIR / "apps/pages/static",
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

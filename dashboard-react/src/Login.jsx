@@ -1,8 +1,10 @@
 import axios from 'axios'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import './Auth.css'
+import { AuthContext } from './context/AuthContext'
 
-const Login = ({ setAuth }) => {
+const Login = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
@@ -15,27 +17,17 @@ const Login = ({ setAuth }) => {
     setFormData({ ...formData, [name]: value })
   }
 
+  const { login } = useContext(AuthContext)
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setErrorMessage('')
 
     try {
-      // The path /api/v1/login/ will be proxied to http://127.0.0.1:8000 by Vite
       const response = await axios.post('/api/v1/login/', formData)
+      await login(response.data.token)
 
-      // 1. Grab the token from the response (check if your key is 'token' or 'access')
-      const token = response.data.token
-
-      // 2. Save it in the browser
-      localStorage.setItem('authToken', token)
-
-      // 3. Set it as a default for ALL future Axios calls
-      axios.defaults.headers.common['Authorization'] = `Token ${token}`
-
-      setAuth(true)
-
-      alert('Logged in successfully!')
-      navigate('/')
+      navigate('/dashboard')
     } catch (error) {
       console.error('Login error:', error)
       setErrorMessage(
@@ -45,37 +37,61 @@ const Login = ({ setAuth }) => {
   }
 
   return (
-    <div style={{ maxWidth: '300px', margin: '50px auto' }}>
-      <h2>Sign In</h2>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+    <div className="auth-page">
+      <div className="deco-circle deco-1" />
+      <div className="deco-circle deco-2" />
+      <div className="deco-circle deco-3" />
 
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="text"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleInputChange}
-            style={{ width: '100%', padding: '8px' }}
-            required
-          />
+      <div className="auth-inner">
+        <div className="auth-card">
+          <h2 className="auth-title">USER LOGIN</h2>
+          <p className="auth-subtitle">Welcome to the website</p>
+
+          {errorMessage && <p className="auth-error">{errorMessage}</p>}
+
+          <form onSubmit={handleLogin}>
+            <div className="auth-form-group">
+              <label className="auth-label" htmlFor="login-email">
+                Email
+              </label>
+              <input
+                id="login-email"
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="auth-input"
+                required
+              />
+            </div>
+            <div className="auth-form-group">
+              <label className="auth-label" htmlFor="login-password">
+                Password
+              </label>
+              <input
+                id="login-password"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className="auth-input"
+                required
+              />
+            </div>
+            <button type="submit" className="btn-auth">
+              LOGIN
+            </button>
+            <div className="auth-footer">
+              Don&apos;t have an account?{' '}
+              <Link to="/signup" className="auth-link">
+                Create Account
+              </Link>
+            </div>
+          </form>
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleInputChange}
-            style={{ width: '100%', padding: '8px' }}
-            required
-          />
-        </div>
-        <button type="submit" style={{ width: '100%', padding: '10px' }}>
-          Login
-        </button>
-      </form>
+      </div>
     </div>
   )
 }
