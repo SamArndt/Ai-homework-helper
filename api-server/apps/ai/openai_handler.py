@@ -1,6 +1,9 @@
 import logging
 import os
 import random
+import json
+import re
+from typing import Any
 from openai import OpenAI
 
 logger = logging.getLogger(__name__)
@@ -106,7 +109,7 @@ class OpenAIHandler:
 
     @staticmethod
     def generate_math_problem(topic_descriptions: list[str] | None = None) -> str:
-        if not topic_descriptions | topic_descriptions.count == 0:
+        if not topic_descriptions or len(topic_descriptions) == 0:
             topic_descriptions = DEFAULT_TOPICS
         
         selected_topic = random.choice(topic_descriptions)
@@ -126,11 +129,11 @@ class OpenAIHandler:
                 messages = [
                     {"role": "system", "content": DEFAULT_MATH_TEACHER_CONTEXT},
                     {"role": "user", "content": prompt},
-                    temperature=0.8
                 ],
+                temperature=0.8,
             )
 
-            text = response.choices[0].message.context or ""
+            text = response.choices[0].message.content or ""
             return text.strip()
 
         except Exception as e:
@@ -138,7 +141,7 @@ class OpenAIHandler:
             raise
 
     @staticmethod
-    def extract_equation(problem_text: str) -> dict[str, any]:
+    def extract_equation(problem_text: str) -> dict[str, Any]:
         if not isinstance(problem_text, str) or not problem_text.strip():
             raise ValueError("Problem text must be a non-empty string.")
         
@@ -204,6 +207,7 @@ class OpenAIHandler:
 
             text = response.choices[0].message.content or "{}"
             logger.debug("Raw extraction response: %s", text)
+            return text.strip()
 
         except Exception as e:
             logger.exception("Error extracting equation: %s", e)
