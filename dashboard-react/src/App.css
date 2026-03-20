@@ -475,3 +475,29 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ─── Problem Display ─── */
+.problem-box {
+  background: #f3f0ff; /* Very light purple to match your theme */
+  border: 1px solid #ddd6fe;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.problem-text {
+  color: #4c1d95; /* Deep purple for readability */
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.problem-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8b5cf6;
+  margin-bottom: 0.5rem;
+}
