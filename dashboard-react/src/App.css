@@ -31,6 +31,14 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+.nav-link-active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.10);
+
+
+  box-shadow:inset  0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
 .nav-brand {
   font-family: 'DM Sans', sans-serif;
   font-size: 1.3rem;
@@ -317,13 +325,88 @@ body {
   width: 75%;
 
   margin: 0 auto;
+
+  max-height: 200px;
+  display: flex;
+  flex-direction: column;
+
+}
+.profile-card-activity-expand {
+  max-height: 600px;
+}
+
+.profile-activity-header {
+
+
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1px;
+  margin-bottom: 12px;
+}
+
+.profile-card-activity-dropdown {
+
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+
+  background: #ede9fe;
+  color: #5b1a8a;
+
+  border: 1px solid #c4b5fd;
+  border-radius: 10px;
+
+  padding: 15px 8px;
+
+
+
+
+  cursor: pointer;
+
+
+
+}
+.profile-card-activity-dropdown:hover {
+  background: #ddd6fe;
+}
+
+.profile-card-bodytext {
+  font-size: 14px;
+
+  color: #4b5563;
+  background: #f8f5ff;
+
+  border: 1px solid #ede9fe;
+  border-radius: 10px;
+
+
+  padding: 10px 14px;
+}
+
+.profile-activity-scroll {
+  padding-right: 5px;
+
+
+  overflow-y: auto;
+  flex: 1;
+  
 }
 .profile-card-title {
+
+  text-align: center;
+
+
   font-size: 15px;
   font-weight: 600;
 
   color: #6b46c1;
   margin-bottom: 16px;
+
+
   
 
 
@@ -352,9 +435,13 @@ body {
 
 .profile-null {
   font-size: 14px;
+  text-align: center;
 
   color: #6b7280;
+  margin-bottom: 12px;
 }
+
+
 
 
 
