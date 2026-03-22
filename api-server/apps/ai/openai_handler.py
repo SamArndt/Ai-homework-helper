@@ -205,9 +205,52 @@ class OpenAIHandler:
                 response_format={"type": "json_object"},
             )
 
+            # text = response.choices[0].message.content or "{}"
+            # logger.debug("Raw extraction response: %s", text)
+            # return text.strip()
+
             text = response.choices[0].message.content or "{}"
             logger.debug("Raw extraction response: %s", text)
-            return text.strip()
+
+            # Parse JSON
+            parsed = json.loads(text)
+
+            if not isinstance(parsed, dict):
+                raise ValueError("Invalid response structure from AI")
+
+            # Clean equation strings
+            def clean_equation(eq: str) -> str:
+                if not eq:
+                    return ""
+                eq = re.sub(r"\btext\s+and\s+", "", eq, flags=re.IGNORECASE)
+                eq = re.sub(r"\btext\s*,?\s*", "", eq, flags=re.IGNORECASE)
+                eq = re.sub(r",\s*,\s*", ", ", eq)
+                eq = re.sub(r"^\s*,\s*", "", eq)
+                eq = re.sub(r"\s*,\s*$", "", eq)
+                return eq.strip()
+
+            # Normalize variables
+            variables = parsed.get("variables", [])
+            cleaned_variables: list[str] = []
+
+            if isinstance(variables, list):
+                cleaned_variables = [
+                    v.strip()
+                    for v in variables
+                    if isinstance(v, str) and v.strip()
+                ]
+            elif isinstance(variables, dict):
+                cleaned_variables = [
+                    f"{value} {key}"
+                    for key, value in variables.items()
+                    if value is not None
+                ]
+
+            return {
+                "equation": clean_equation(parsed.get("equation", "")),
+                "substitutedEquation": clean_equation(parsed.get("substitutedEquation", "")),
+                "variables": cleaned_variables,
+            }
 
         except Exception as e:
             logger.exception("Error extracting equation: %s", e)
