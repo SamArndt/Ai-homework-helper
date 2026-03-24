@@ -34,15 +34,15 @@ Task:
 6) If the start equation(s) are unclear or cannot be solved reliably, return steps: [].
 
 Return ONLY valid JSON with EXACT keys:
-{{
+{
   "targetVariable": "x",
   "startEquation": "100 = 25 + 0.15x",
   "steps": [
-    {{ "instruction": "Subtract 25 from both sides", "checkpoint": "75 = 0.15x" }},
-    {{ "instruction": "Divide both sides by 0.15", "checkpoint": "500 = x" }}
+    { "instruction": "Subtract 25 from both sides", "checkpoint": "75 = 0.15x" },
+    { "instruction": "Divide both sides by 0.15", "checkpoint": "500 = x" }
   ],
   "finalAnswer": "x = 500"
-}}
+}
 ''',
                     system_content="You generate short, checkable algebra checkpoint steps. Always return valid JSON.",
                     temperature=0.2)
