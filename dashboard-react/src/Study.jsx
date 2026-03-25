@@ -24,7 +24,7 @@ export default function Study() {
   }
 
   return (
-    <div className="home-page">
+    <div className="home-page study-scroll">
       <div className="deco-circle deco-1" />
       <div className="deco-circle deco-2" />
       <div className="home-content">
