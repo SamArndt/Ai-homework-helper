@@ -17,6 +17,22 @@ def solve_math_problem(request):
         }
     )
 
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def generate_hint(request):
+    hint_num = request.data.get("hint_number", 1) 
+    slug = f"generate-hint-{hint_num}" 
+    
+    data_map = {
+        "topic": request.data.get('topic'),
+        "problem": request.data.get('problem')
+    }
+
+    return Response({
+        "hint_number": hint_num,
+        "hint": process_chat(slug, data_map)
+    })
+
 @api_view()
 @permission_classes([permissions.IsAuthenticated])
 def generate_math_problem(request):
