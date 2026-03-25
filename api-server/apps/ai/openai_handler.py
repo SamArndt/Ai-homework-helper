@@ -3,6 +3,7 @@ import os
 import random
 import json
 import re
+import time
 from typing import Any
 from openai import OpenAI
 
@@ -255,4 +256,13 @@ class OpenAIHandler:
         except Exception as e:
             logger.exception("Error extracting equation: %s", e)
             raise
+
+    @staticmethod
+    def simulate_delay(milliseconds: int, status: int, data: str | None = None) -> str:
+        logger.debug("Simulating delay of %d ms", milliseconds)
+        seconds = max(milliseconds, 1) / 1000.0
+        time.sleep(seconds)
+        logger.debug("Returning response after delay: status=%d, data=%s", status, data)
+        return f"Simulated response with status {status} and data: {data or ''}"
+
 
