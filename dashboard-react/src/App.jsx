@@ -13,8 +13,10 @@ import Dashboard from './Dashboard'
 import Login from './Login'
 import ProtectedRoute from './ProtectedRoute'
 import Signup from './Signup'
-import Study from './study'
+import Study from './Study'
 import Settings from './Settings'
+import ProfileSettings from './pages/ProfileSettings'
+import SettingsPlaceholder from './pages/SettingsPlaceholder'
 
 function AppContent() {
   const { user, logout } = useContext(AuthContext)
@@ -110,6 +112,128 @@ function AppContent() {
             <ProtectedRoute>
               <div className="page-wrapper">
                 <Settings />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings/profile"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <ProfileSettings />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings/password"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "Change Your Password"
+                  description = "Change your password " />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings/privacy-policy"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "Privacy Policy"
+                  description = "More Boring Stuff" />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings/tos"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "Terms Of Service"
+                  description = "The Boring Stuff " />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings/help"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "Help & FAQ"
+                  description = "Find Answers To All of Your Questions " />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+
+        <Route
+          path="/settings/contact"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "Contact Us"
+                  description = "Send Us A Message " />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings/report-bug"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "Report A Bug"
+                  description = "Submit Your Findings" />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+       <Route
+          path="/settings/about"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "About"
+                  description = "App Details" />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings/rate"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <SettingsPlaceholder
+
+                  title = "Rate Our App"
+                  description = "5 Stars pls" />
               </div>
             </ProtectedRoute>
           }
