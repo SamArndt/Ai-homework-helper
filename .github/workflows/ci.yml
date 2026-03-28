@@ -13,6 +13,8 @@ jobs:
   # --- BACKEND JOBS ---
   django-tests:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: "<api_key>"
     steps:
       - uses: actions/checkout@v4
       
