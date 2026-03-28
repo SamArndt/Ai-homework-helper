@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     "users",
     "math_tutor",
     "request_id",
+    "classroom",
 ]
 
 MIDDLEWARE = [
