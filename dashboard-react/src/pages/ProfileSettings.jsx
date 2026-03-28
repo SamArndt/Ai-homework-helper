@@ -17,7 +17,7 @@ return (
 
             <button type="button"
                     className="profilesettings-backbutton"
-                    onClick={() => navigate('/settings')}
+                    onClick={() => nav('/settings')}
             >
                 Back To Settings
             </button>
@@ -40,6 +40,7 @@ return (
                         <input type="text"
                                value= {user?.first_name || ""}
                                className="profilesettings-inputtext"
+                               readOnly
                         />
                     </label>
                 </div>
@@ -51,6 +52,7 @@ return (
                         <input type="text"
                                value= {user?.email|| ""}
                                className="profilesettings-inputtext"
+                               readOnly
                         />
                     </label>
                 </div>

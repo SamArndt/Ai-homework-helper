@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import './App.css';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 
 export default function Settings() {
+    const nav = useNavigate();
+    const go = (path) => 
+        { return () => {
+            nav(path)}}
+
     return (
 
         <div className="settings-outer">
@@ -27,7 +35,11 @@ export default function Settings() {
                     </div>
 
                     <div className="settings-card">
-                        <div className="settings-row">
+
+                        <div className="settings-row"
+                            onClick={go("/settings/profile")}
+                        >
+
                             <div className="settings-leftRow">
                                 <div className="settings-rowTitle">
                                     EDIT PROFILE
@@ -38,7 +50,9 @@ export default function Settings() {
                         </div>
                     </div>
 {/*  PASSWORD   */}
-                    <div className="settings-row">
+                    <div className="settings-row"
+                        onClick={go("/settings/password")}
+                        >
                         <div className="settings-leftRow">
                             <div className="settings-rowTitle">
                                 CHANGE PASSWORD
@@ -128,7 +142,9 @@ export default function Settings() {
                                 </div>
                             </div>
 {/*  PRIVACY   */}
-                        <div className="settings-row">
+                        <div className="settings-row"
+                            onClick={go("/settings/privacy-policy")}
+                        >
                             <div className="settings-leftRow">
                                 <div className="settings-rowTitle">
                                     PRIVACY POLICY
@@ -139,7 +155,9 @@ export default function Settings() {
                             </div>
                         </div>
 {/*  TOS   */}
-                        <div className="settings-row">
+                        <div className="settings-row"
+                            onClick={go("/settings/tos")}
+                        >
                             <div className="settings-leftRow">
                                 <div className="settings-rowTitle">
                                     TERMS OF SERVICE
@@ -164,7 +182,9 @@ export default function Settings() {
                     </div>
 
                     <div className="settings-card">
-                        <div className="settings-row">
+                        <div className="settings-row"
+                            onClick={go("/settings/help")}
+                        >
                             <div className="settings-leftRow">
 
                                 <div className="settings-rowTitle">
@@ -177,7 +197,9 @@ export default function Settings() {
 
                             </div>
 {/*  CONTACT   */}
-                        <div className="settings-row">
+                        <div className="settings-row"
+                        onClick={go("/settings/contact")}
+                        >
                             <div className="settings-leftRow">
                                 <div className="settings-rowTitle">
                                     CONTACT US
@@ -188,7 +210,8 @@ export default function Settings() {
                             </div>
                         </div>
 {/*  REPORT BUG   */}
-                        <div className="settings-row">
+                        <div className="settings-row"
+                        onClick={go("/settings/report-bug")}>
                             <div className="settings-leftRow">
                                 <div className="settings-rowTitle">
                                     REPORT A BUG
@@ -209,7 +232,9 @@ export default function Settings() {
                     </div>
 
                     <div className="settings-card">
-                        <div className="settings-row">
+                        <div className="settings-row"
+                        onClick={go("/settings/about")}
+                        >
                             <div className="settings-leftRow">
 
                                 <div className="settings-rowTitle">
@@ -228,7 +253,9 @@ export default function Settings() {
                             </div>
 
 {/*  RATE APP   */}
-                            <div className="settings-row">
+                            <div className="settings-row"
+                            onClick={go("/settings/rate")}
+                            >
                                 <div className="settings-leftRow">
                                     <div className="settings-rowTitle">
                                         RATE THE APP
