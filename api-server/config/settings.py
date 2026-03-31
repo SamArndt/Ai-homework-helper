@@ -94,7 +94,13 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",  # Required for Token-based login
     "corsheaders",
     "users",
+<<<<<<< HEAD
     "request_id",
+=======
+    "math_tutor",
+    "request_id",
+    "classroom",
+>>>>>>> development
 ]
 
 MIDDLEWARE = [

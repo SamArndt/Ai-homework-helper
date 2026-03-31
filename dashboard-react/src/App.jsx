@@ -2,6 +2,7 @@ import { useContext } from 'react'
 import {
   Link,
   Navigate,
+  NavLink,
   Route,
   BrowserRouter as Router,
   Routes,
@@ -11,6 +12,7 @@ import './App.css'
 import { AuthContext, AuthProvider } from './context/AuthContext'
 import Dashboard from './Dashboard'
 import Login from './Login'
+import Profile from './Profile'
 import ProtectedRoute from './ProtectedRoute'
 import Signup from './Signup'
 import Study from './study'
@@ -26,29 +28,61 @@ function AppContent() {
       {!isAuthPage && (
         <nav className="app-nav">
           <Link to="/" className="nav-brand">
-            MyApp
+            AI-Based Homework Helper
           </Link>
           <div className="nav-links">
             {user ? (
               <>
-                <Link to="/dashboard" className="nav-link">
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
                   Dashboard
-                </Link>
-                <Link to="/study" className="nav-link">
+                </NavLink>
+
+                <NavLink
+                  to="/study"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
                   Study
-                </Link>
+                </NavLink>
+
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
+                  Profile
+                </NavLink>
+
                 <button onClick={logout} className="btn-nav-logout">
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="nav-link">
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
                   Login
-                </Link>
-                <Link to="/signup" className="btn-nav-primary">
+                </NavLink>
+
+                <NavLink
+                  to="/signup"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
                   Sign Up
-                </Link>
+                </NavLink>
               </>
             )}
           </div>
@@ -100,6 +134,17 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <Profile />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>

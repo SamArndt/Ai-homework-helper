@@ -6,3 +6,5 @@ mysqlclient>=2.2.0
 python-dotenv>=1.0.0
 
 django-request-id>=1.0.0
+
+openai~=2.28.0
