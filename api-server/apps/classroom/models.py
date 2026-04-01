@@ -1,11 +1,38 @@
 from django.db import models
+from django.db.models import UniqueConstraint
+from django.db.models.functions import Lower
 from enum import IntEnum
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Classroom(models.Model):
-    # The name/label for a given class
-    name = models.CharField(max_length=255)
+    # Unique identifier for a class, used for internal reference and user-friendly reporting. Case-insensitive. 
+    # For example: "ser401-fall-2026 A" or "Social Studies 2026 B Alexander"
+    identifier = models.CharField(
+        max_length=255,
+        help_text="Unique identifier for this class, used for internal reference and user-friendly reporting. Case-insensitive. For example: 'ser401-fall-2026 A' or 'Social Studies 2026 B Alexander'. This field must be unique across all classes and must not be blank."
+    )
+
+    # The name for a given class, regardless of semester. Can (and probably should) be a subset of identifier. For example: "SER401"
+    name = models.CharField(
+        max_length=128,
+        help_text="The human-readable name of this class, as displayed to users"
+    )
+
+    # Optional field for the semester or timeframe of a class. For example: "Fall"
+    timeframe = models.CharField(
+        max_length=32, 
+        blank=True, 
+        help_text="Optional timeframe for the class, if more specificity than year is needed e.g. Fall, Spring, etc."
+    )
+
+    # Optional field for the year of a class. For example: 2024
+    year = models.IntegerField(
+        validators=[MinValueValidator(2000), MaxValueValidator(3000)],
+        blank=True,
+        null=True,
+        help_text="Optional year for the class, e.g. 2024"
+    )
     
     # Through table for all users (teachers and students)
     # who are added to a class
@@ -18,7 +45,7 @@ class Classroom(models.Model):
     # Get all enrolled users in a class who are designated
     # teachers. This includes the global teacher group role
     # and others with membership overrides to teacher
-    # priviledges.
+    # privileges.
     def get_teachers(self):
         pass
 
@@ -27,6 +54,40 @@ class Classroom(models.Model):
     def get_students(self):
         pass
 
+    # Associate a user with a class instance. By default, 
+    # the user will be added with their global role 
+    # (teacher, student, etc.) but an 
+    # optional override can be provided to assign a 
+    # specific role for this class.
+    def add_user(self, user, role_override: "RoleOverride | None" = None):
+        pass
+
+    # Remove a user from a class, if they were added previously.
+    def remove_user(self, user):
+        pass
+
+    # Updates a user's role override for this class. If role_override given is None, then the user's global role will be used instead.
+    def set_user_role_override(self, user, role_override: "RoleOverride | None"):
+        pass
+
+    ## Override the save method to ensure that the identifier is stored in a consistent format (e.g., stripped of leading/trailing whitespace) 
+    # before saving to the database.
+    def save(self, *args, **kwargs):
+        if self.identifier:
+            self.identifier = self.identifier.strip()
+        super().save(*args, **kwargs)
+    
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower("identifier"),
+                name="unique_classroom_identifier_ci"
+            )
+        ]
+    
+    # String representation of a classroom, using its identifier
+    def __str__(self):
+        return self.identifier
 
 # Roles a user can be assigned if using a class-specific override.
 class RoleOverride(IntEnum):
