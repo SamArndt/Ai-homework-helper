@@ -115,6 +115,8 @@ export default function Study() {
     setIsValidating(true)
     const parsedSolution = parseSolution(solution)
     const steps = parsedSolution?.steps || []
+
+  
     const isLastStep = currentStepIndex >= steps.length
 
     const target = isLastStep
@@ -150,7 +152,23 @@ export default function Study() {
 
   const parsed = parseSolution(solution)
   const steps = parsed?.steps || []
-  const isFinished = parsed && currentStepIndex > steps.length
+
+  const totalSteps = steps.length + 1;
+  const completedSteps = currentStepIndex;
+
+  let currentStepHeader = ''
+    if (currentStepIndex >= steps.length) {
+      currentStepHeader = 'Answer'
+    }
+    else{
+      currentStepHeader = 'Step ' + (currentStepIndex+1);
+  }
+
+  const progressAmount = (completedSteps / totalSteps) * 100;
+
+  const isFinished = parsed && currentStepIndex > steps.length;
+
+
 
   return (
     <div className="study-bg">
@@ -219,6 +237,20 @@ export default function Study() {
 
                 {!isFinished ? (
                   <>
+                  <div className='progress-header'>
+                    <p>Completed:        <strong>{completedSteps}</strong> of <strong>{totalSteps} </strong>steps... </p>
+                    <p>Current Step:     <strong>{currentStepHeader}</strong></p>
+
+                    <div className='progress-bar'>
+                      <div className='progress-bar-completed'
+                           style= {{ width: progressAmount + "% "}}
+                      >
+            
+                      </div>
+                    </div>
+
+                  </div>
+
                     <div
                       style={{
                         display: 'flex',
