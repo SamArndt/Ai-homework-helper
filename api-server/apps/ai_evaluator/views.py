@@ -15,4 +15,4 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 @permission_classes([permissions.IsAuthenticated])
 def generate_evaluation_quiz(request):
     topic = request.data.get("topic")
-    return Response({"topic": topic.value, "quiz": process_chat("generate-evaluation-quiz", {"topic": topic.value})})
+    return Response({"topic": topic, "quiz": process_chat("generate-evaluation-quiz", {"topic": topic})})
