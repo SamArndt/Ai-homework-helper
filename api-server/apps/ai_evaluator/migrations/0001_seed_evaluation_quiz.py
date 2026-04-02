@@ -54,6 +54,9 @@ Return ONLY this JSON (no markdown, no extra text):
     )
 
 class Migration(migrations.Migration):
+    dependencies = [
+        ('math_tutor', '0008_seed_gradestep'),
+    ]
 
     operations = [
         migrations.RunPython(seed_evaluation_quiz),
