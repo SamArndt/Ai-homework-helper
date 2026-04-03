@@ -12,11 +12,10 @@ import './App.css'
 import { AuthContext, AuthProvider } from './context/AuthContext'
 import Dashboard from './Dashboard'
 import Login from './Login'
+import Profile from './Profile'
 import ProtectedRoute from './ProtectedRoute'
 import Signup from './Signup'
 import Study from './study'
-import Profile from './Profile'
-
 
 function AppContent() {
   const { user, logout } = useContext(AuthContext)
@@ -34,48 +33,56 @@ function AppContent() {
           <div className="nav-links">
             {user ? (
               <>
-              
-              <NavLink to ="/dashboard"
-                       className={({isActive}) => 
-                         isActive ? 'nav-link nav-link-active' : 'nav-link'} 
-              >
-                Dashboard
-              </NavLink>
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
+                  Dashboard
+                </NavLink>
 
-              <NavLink to ="/study"
-                       className={({isActive}) => 
-                         isActive ? 'nav-link nav-link-active' : 'nav-link'} 
-              >
-                Study
-              </NavLink>
+                <NavLink
+                  to="/study"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
+                  Study
+                </NavLink>
 
-              <NavLink to ="/profile"
-                       className={({isActive}) => 
-                         isActive ? 'nav-link nav-link-active' : 'nav-link'} 
-              >
-                Profile
-              </NavLink>
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
+                  Profile
+                </NavLink>
 
-              <button onClick={logout} className="btn-nav-logout">
-                Logout
-              </button>
+                <button onClick={logout} className="btn-nav-logout">
+                  Logout
+                </button>
               </>
             ) : (
               <>
-                <NavLink to="/login"
-                         className={({isActive}) =>
-                            isActive ? "nav-link nav-link-active" : 'nav-link'}
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
                 >
                   Login
-                </NavLink> 
+                </NavLink>
 
-                <NavLink to="/signup"
-                         className={({isActive}) =>
-                            isActive ? "nav-link nav-link-active" : 'nav-link'}
+                <NavLink
+                  to="/signup"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
                 >
                   Sign Up
-                </NavLink> 
-
+                </NavLink>
               </>
             )}
           </div>
