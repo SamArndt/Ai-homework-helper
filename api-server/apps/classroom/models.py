@@ -77,6 +77,10 @@ class Classroom(models.Model):
     @classmethod
     def get_or_create_by_identifier(cls, identifier: str, **defaults):
         identifier = identifier.strip()
+        return cls.objects.get_or_create(
+            identifier__iexact=identifier,
+            defaults={**defaults, "identifier": identifier},
+        )
 
     # Get all enrolled users in a class who are designated
     # teachers. This includes the global teacher group role
@@ -130,17 +134,41 @@ class Classroom(models.Model):
         ).delete()
 
     def get_assignments(self):
-        pass
+        return self.assignments.all()
 
     def associate_assignment(self, assignment):
-        pass
+        classroom_assignment, _ = ClassroomAssignment.objects.get_or_create(
+            classroom=self,
+            assignment=assignment
+        )
+
+        return classroom_assignment
 
     def remove_assignment_association(self, assignment, delete_reports=False):
-        pass
+        if delete_reports:
+            StudentReport.objects.filter(
+                classroom=self,
+                assignment=assignment,
+            ).delete()
 
-    def get_student_reports(self, student):
-        pass
+        ClassroomAssignment.objects.filter(
+            classroom=self,
+            assignment=assignment,
+        ).delete()
 
+    def get_student_reports(self, student=None):
+        queryset = StudentReport.objects.filter(classroom=self)
+
+        if student is not None:
+            queryset = queryset.filter(student = student)
+        
+        return queryset.order_by("-created_at")
+
+    # Normalize identifier value on save
+    def save(self, *args, **kwargs):
+        if self.identifier:
+            self.identifier = self.identifier.strip()
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [
@@ -163,7 +191,8 @@ class ClassroomMembership(models.Model):
 
     classroom = models.ForeignKey(
         Classroom,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="memberships",
     )
 
     # Optional membership override
@@ -232,12 +261,63 @@ class ClassroomAssignment(models.Model):
 
 # Record of student work, including practice problems or assignments. May or may not be associated with a classroom
 class StudentReport(models.Model):
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="student_reports",
+    )
 
+    classroom = models.ForeignKey(
+        Classroom,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="student_reports",
+    )
+
+    assignment = models.ForeignKey(
+        "Assignment",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="student_reports",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True);
+    last_modified = models.DateTimeField(auto_now=True);
+
+    problems = models.ManyToManyField(
+        "Problem",
+        through="StudentReportProblem",
+        related_name="student_reports",
+        blank=True,
+    )
 
     def create_or_append_student_report(self, student, id, data):
         pass
 
-    pass
+# An object describing a student's work on a problem. Each record is for one attempt at solving the problem.
+# For example, if a student works a problem as part of practice problems, then later the same problem is in an
+# assignment, then the practice problem attempt and the assignment attempt would be unique StudentReportProblem
+# instances.
+class StudentReportProblem(models.Model):
+    student_report = models.ForeignKey(
+        "StudentReport",
+        on_delete=models.CASCADE,
+        related_name="report_problems"
+    )
+
+    problem = models.ForeignKey(
+        "Problem",
+        on_delete=models.CASCADE,
+        related_name="problem_reports"
+    )
+
+    attempted_at = models.DateTimeField(auto_now_add=True)
+    hints_used = models.PositiveIntegerField(default=0)     # Placeholder based on previous work
+    response_data = models.JSONField(null=True, blank=True) # Placeholder based on previous work
+    is_correct = models.BooleanField(null=True, blank=True)
+    attempt_number = models.PositiveIntegerField(default = 1)
 
 # An object defining a group of problems for students to work on. Can be reused in different classroom instances
 class Assignment(models.Model):
