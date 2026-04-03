@@ -5,6 +5,13 @@ from enum import IntEnum
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+# Roles a user can be assigned if using a class-specific override.
+class RoleOverride(IntEnum):
+    OBSERVER = 0
+    STUDENT = 1
+    TEACHER = 2
+    SUPERUSER = 3
+
 class Classroom(models.Model):
     # Unique identifier for a class, used for internal reference and user-friendly reporting. Case-insensitive. 
     # For example: "ser401-fall-2026 A" or "Social Studies 2026 B Alexander"
@@ -34,6 +41,22 @@ class Classroom(models.Model):
         help_text="Optional year for the class, e.g. 2024"
     )
 
+    # Through table for all users (teachers and students)
+    # who are added to a class
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="ClassroomMembership",
+        related_name="enrolled_classes"
+    )
+
+    # Through table for all assignments associated with this class
+    assignments = models.ManyToManyField(
+        "Assignment",
+        through="ClassroomAssignment",
+        related_name="classrooms",
+        blank=True,
+    )
+
     @classmethod
     def create_classroom(
         cls,
@@ -54,15 +77,6 @@ class Classroom(models.Model):
     @classmethod
     def get_or_create_by_identifier(cls, identifier: str, **defaults):
         identifier = identifier.strip()
-        
-    
-    # Through table for all users (teachers and students)
-    # who are added to a class
-    members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        through="ClassroomMembership",
-        related_name="enrolled_classes"
-    )
 
     # Get all enrolled users in a class who are designated
     # teachers. This includes the global teacher group role
@@ -115,9 +129,18 @@ class Classroom(models.Model):
             user=user,
         ).delete()
 
-    # Updates a user's role override for this class. If role_override given is None, then the user's global role will be used instead.
-    def set_user_role_override(self, user, role_override: "RoleOverride | None"):
+    def get_assignments(self):
         pass
+
+    def associate_assignment(self, assignment):
+        pass
+
+    def remove_assignment_association(self, assignment, delete_reports=False):
+        pass
+
+    def get_student_reports(self, student):
+        pass
+
 
     class Meta:
         constraints = [
@@ -131,14 +154,7 @@ class Classroom(models.Model):
     def __str__(self):
         return self.identifier
 
-# Roles a user can be assigned if using a class-specific override.
-class RoleOverride(IntEnum):
-    OBSERVER = 0
-    STUDENT = 1
-    TEACHING_ASSISTANT = 2
-    TEACHER = 3
-    SUPERUSER = 4
-
+# Assignment object associating a user (student, teacher, etc) with a classroom and, optionally, a role override
 class ClassroomMembership(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
@@ -184,6 +200,92 @@ class ClassroomMembership(models.Model):
         
         # Fallback to observer role if no group specified, no suitable overrides and not an admin
         return RoleOverride.OBSERVER
+    
+    # Updates a user's role override for this class. If role_override given is None, then the user's global role will be used instead.
+    def set_user_role_override(self, role_override: "RoleOverride | None"):
+        self.role_override = None if role_override is None else role_override.value
+        self.save(update_fields=["role_override"])
+    
+# Object associating assignments with classrooms, allowing for additional metadata on the association
+class ClassroomAssignment(models.Model):
+    classroom = models.ForeignKey(
+        Classroom,
+        on_delete=models.CASCADE,
+        related_name="classroom_assignments"
+    )
 
+    assignment = models.ForeignKey(
+        "Assignment",
+        on_delete=models.CASCADE,
+        related_name="assignment_classrooms"
+    )
+
+    assigned_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["classroom", "assignment"],
+                name="unique_assignment_per_classroom"
+            )
+        ]
+
+# Record of student work, including practice problems or assignments. May or may not be associated with a classroom
 class StudentReport(models.Model):
+
+
+    def create_or_append_student_report(self, student, id, data):
+        pass
+
+    pass
+
+# An object defining a group of problems for students to work on. Can be reused in different classroom instances
+class Assignment(models.Model):
+    identifier=models.CharField(max_length=255, unique=True)
+    title=models.CharField(max_length=255)
+    description=models.TextField(blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def create_assignment(self, id, data):
+        pass
+
+    def get_reports_for_assignment(self, assignment, student: any | None, teacher: any | None, classroom: Classroom | None):
+        pass
+
+class AssignmentVersion(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    major_version = models.PositiveIntegerField(default=1)
+    minor_version = models.PositiveIntegerField(default=0)
+
+    @property
+    def version(self):
+        return f"{self.major_version}.{self.minor_version}"
+    
+
+    assignment = models.ForeignKey(
+        Assignment,
+        on_delete=models.CASCADE
+    )
+
+    problems =models.ManyToManyField(
+        "Problem",
+        related_name="assignment_versions",
+        blank=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["assignment", "major_version", "minor_version"],
+                name="unique_assignment_version"
+            )
+        ]
+    
+    def __str__(self):
+        return f"{self.assignment.identifier} v{self.version}"
+
+# An object representing a single problem a student can work
+# TODO: may be redundant definition, check with team to see if similar model already used elsewhere and integrate 
+class Problem(models.Model):
     pass
