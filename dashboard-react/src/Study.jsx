@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { AuthContext } from './context/AuthContext'
 
 function parseSolution(raw) {
   if (!raw) return null
@@ -12,6 +13,8 @@ function parseSolution(raw) {
 }
 
 export default function Study() {
+  const { token } = useContext(AuthContext)
+
   const [mode, setMode] = useState('setup')
   const [problem, setProblem] = useState('')
   const [topic, setTopic] = useState('')
@@ -24,7 +27,6 @@ export default function Study() {
   const [solutionLoading, setSolutionLoading] = useState(false)
   const [openHintIndex, setOpenHintIndex] = useState(null)
 
-  // Step Tracking State
   const [work, setWork] = useState('')
   const [feedback, setFeedback] = useState(null)
   const [isValidating, setIsValidating] = useState(false)
@@ -36,17 +38,27 @@ export default function Study() {
       .find((r) => r.startsWith('csrftoken='))
       ?.split('=')[1]
 
+  // ✅ Centralized headers with token auth
+  const getHeaders = () => ({
+    'Content-Type': 'application/json',
+    'X-CSRFToken': getCsrfToken(),
+    Authorization: `Token ${token}`,
+  })
+
   const fetchNewProblem = async () => {
     setIsGenerating(true)
     setProblem('')
     try {
-      const res = await fetch('/api/v1/math_problem')
+      const res = await fetch('/api/v1/math_problem/', {
+        headers: getHeaders(),
+      })
       const data = await res.json()
       setProblem(
         data.problem.replace(/\\\(|\\\)/g, '$').replace(/\\\[|\\\]/g, '$$'),
       )
       setTopic(data.topic || '')
-    } catch {
+    } catch (err) {
+      console.error('Fetch error:', err)
       setProblem('Failed to generate problem.')
     } finally {
       setIsGenerating(false)
@@ -65,10 +77,7 @@ export default function Study() {
     try {
       const res = await fetch('/api/v1/solve_problem/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCsrfToken(),
-        },
+        headers: getHeaders(),
         body: JSON.stringify({ problem, topic }),
       })
       const data = await res.json()
@@ -86,10 +95,7 @@ export default function Study() {
     try {
       const res = await fetch('/api/v1/generate_hint/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCsrfToken(),
-        },
+        headers: getHeaders(),
         body: JSON.stringify({ hint_number: hintNumber, topic, problem }),
       })
       const data = await res.json()
@@ -118,10 +124,7 @@ export default function Study() {
     try {
       const res = await fetch('/api/v1/grade_step/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCsrfToken(),
-        },
+        headers: getHeaders(),
         body: JSON.stringify({
           problem,
           instruction: target.instruction,
@@ -155,7 +158,7 @@ export default function Study() {
         <div className="study-scroll-inner">
           <div className="study-card">
             <div className="study-title-block">
-              <p className="study-eyebrow">Algebra 1</p>
+              <p className="study-eyebrow">{topic || 'Algebra 1'}</p>
               <h1 className="study-title">Study Session</h1>
             </div>
 
@@ -259,7 +262,6 @@ export default function Study() {
                       )}
                     </div>
 
-                    {/* Hint Accordion - Positioned above textarea */}
                     {hints.length > 0 && (
                       <div
                         style={{
