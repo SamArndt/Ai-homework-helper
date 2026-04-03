@@ -122,7 +122,7 @@ class Classroom(models.Model):
 
         if not created and role_override is not None:
             membership.role_override = override_value
-            membership.save()
+            membership.save(update_fields=["role_override"])
 
         return membership
 
@@ -182,7 +182,7 @@ class Classroom(models.Model):
     def __str__(self):
         return self.identifier
 
-# Assignment object associating a user (student, teacher, etc) with a classroom and, optionally, a role override
+# Membership object associating a user (student, teacher, etc) with a classroom and, optionally, a role override
 class ClassroomMembership(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
