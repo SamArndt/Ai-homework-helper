@@ -4,6 +4,7 @@ from django.db.models.functions import Lower
 from enum import IntEnum
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from typing import Any
 
 # Roles a user can be assigned if using a class-specific override.
 class RoleOverride(IntEnum):
@@ -330,7 +331,11 @@ class Assignment(models.Model):
     def create_assignment(self, id, data):
         pass
 
-    def get_reports_for_assignment(self, assignment, student: any | None, teacher: any | None, classroom: Classroom | None):
+    def get_reports_for_assignment(
+            self,
+            student=None,
+            teacher=None,
+            classroom=None):
         pass
 
 class AssignmentVersion(models.Model):
