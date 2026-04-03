@@ -33,6 +33,28 @@ class Classroom(models.Model):
         null=True,
         help_text="Optional year for the class, e.g. 2024"
     )
+
+    @classmethod
+    def create_classroom(
+        cls,
+        identifier: str,
+        name: str,
+        timeframe: str = "",
+        year: int | None = None
+    ):
+        classroom = cls(
+            identifier=identifier,
+            name=name,
+            timeframe=timeframe,
+            year=year
+        )
+        classroom.save()
+        return classroom
+    
+    @classmethod
+    def get_or_create_by_identifier(cls, identifier: str, **defaults):
+        identifier = identifier.strip()
+        
     
     # Through table for all users (teachers and students)
     # who are added to a class
@@ -47,12 +69,22 @@ class Classroom(models.Model):
     # and others with membership overrides to teacher
     # privileges.
     def get_teachers(self):
-        pass
+        memberships = self.memberships.select_related("user").prefetch_related("user__groups")
+        teacher_ids = [
+            m.user_id for m in memberships
+            if m.acting_role() == RoleOverride.TEACHER
+        ]
+        return self.members.filter(id__in=teacher_ids)
 
     # Similar to get_teachers(), get users in a group who
     # are enrolled as students
     def get_students(self):
-        pass
+        memberships = self.memberships.select_related("user").prefetch_related("user__groups")
+        student_ids = [
+            m.user_id for m in memberships
+            if(m.acting_role() == RoleOverride.STUDENT)
+        ]
+        return self.members.filter(id__in=student_ids)
 
     # Associate a user with a class instance. By default, 
     # the user will be added with their global role 
@@ -60,23 +92,33 @@ class Classroom(models.Model):
     # optional override can be provided to assign a 
     # specific role for this class.
     def add_user(self, user, role_override: "RoleOverride | None" = None):
-        pass
+        override_value = role_override.value if role_override is not None else None
+
+        membership, created = ClassroomMembership.objects.get_or_create(
+            classroom=self,
+            user=user,
+            defaults={
+                "role_override": override_value
+            }
+        )
+
+        if not created and role_override is not None:
+            membership.role_override = override_value
+            membership.save()
+
+        return membership
 
     # Remove a user from a class, if they were added previously.
     def remove_user(self, user):
-        pass
+        ClassroomMembership.objects.filter(
+            classroom=self,
+            user=user,
+        ).delete()
 
     # Updates a user's role override for this class. If role_override given is None, then the user's global role will be used instead.
     def set_user_role_override(self, user, role_override: "RoleOverride | None"):
         pass
 
-    ## Override the save method to ensure that the identifier is stored in a consistent format (e.g., stripped of leading/trailing whitespace) 
-    # before saving to the database.
-    def save(self, *args, **kwargs):
-        if self.identifier:
-            self.identifier = self.identifier.strip()
-        super().save(*args, **kwargs)
-    
     class Meta:
         constraints = [
             UniqueConstraint(
@@ -118,7 +160,12 @@ class ClassroomMembership(models.Model):
     )
 
     class Meta:
-        unique_together = ("user", "classroom")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "classroom"],
+                name="unique_user_classroom_membership"
+            )
+        ]
 
     def acting_role(self):
         if self.role_override is not None:
