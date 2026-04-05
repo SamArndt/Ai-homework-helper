@@ -12,6 +12,7 @@ function parseSolution(raw) {
   }
 }
 
+
 export default function Study() {
   const { token } = useContext(AuthContext)
 
@@ -31,6 +32,16 @@ export default function Study() {
   const [feedback, setFeedback] = useState(null)
   const [isValidating, setIsValidating] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
+
+  const [hintHistory, setHintHistory] = useState([])
+  const [openHintHistoryID, setOpenHintHistoryID] = useState(null)
+
+
+
+
+
+
+
 
   const getCsrfToken = () =>
     document.cookie
@@ -70,6 +81,11 @@ export default function Study() {
     setMode('solving')
     setHints([])
     setHintNumber(1)
+
+    setHintHistory([])
+    setOpenHintIndex(null)
+    setOpenHintHistoryID(null)
+
     setWork('')
     setFeedback(null)
     setCurrentStepIndex(0)
@@ -100,10 +116,30 @@ export default function Study() {
       })
       const data = await res.json()
       const newHint = { number: data.hint_number, text: data.hint }
+
+      const newHintHistory = {
+
+        hintID: Date.now().toString(),
+        hintLevel: 'Hint ' + data.hint_number,
+        hintStepHeader: 
+            currentStepIndex >= steps.length ? 'Final Answer' : 'Step ' + (currentStepIndex + 1),
+        hintTime: new Date().toLocaleString(),
+        hintText: data.hint,
+        stepIndex: currentStepIndex,
+
+
+      
+      };
+
       setHints([...hints, newHint])
+      setHintHistory([newHintHistory, ...hintHistory]);
       setHintNumber(hintNumber + 1)
       setOpenHintIndex(hints.length)
-    } catch {
+    } 
+
+
+    
+    catch {
       console.error('Hint error')
     } finally {
       setLoadingHint(false)
@@ -167,6 +203,7 @@ export default function Study() {
   const progressAmount = (completedSteps / totalSteps) * 100;
 
   const isFinished = parsed && currentStepIndex > steps.length;
+
 
 
 
@@ -350,6 +387,53 @@ export default function Study() {
                         ))}
                       </div>
                     )}
+
+                    {
+                      hintHistory.length > 0 && (
+                        <div className='hintHistory-box'>
+                          <p className='hintHistory-title'> Hint History </p>
+
+                            {hintHistory.map((hint) => (
+                              <div key={hint.hintID} 
+                                className='hintHistory-card'>
+
+
+                                  <button onClick={() => 
+                                    setOpenHintHistoryID(
+                                      openHintHistoryID === hint.hintID ? null : hint.hintID
+                                    )
+                                  }
+                          className='hintHistory-switch'
+                      >
+                          <span>
+                            {hint.hintStepHeader} | {hint.hintLevel}
+                          </span>
+
+                          <span>
+                            {openHintHistoryID === hint.hintID ? 'Close' : "Expand"}
+                          </span>
+                      </button>
+
+                          {openHintHistoryID === hint.hintID && (
+                            <div className='hintHistory-main'>
+                              <div className='hintHistory-time'>
+                                  Viewed AT: {hint.hintTime}
+                                </div>
+
+                                <div className='hintHistory-body'>
+                                  {hint.hintText}
+                                </div>
+                              </div>
+
+
+                          )}
+
+                 </div>
+              ))}
+
+        </div>
+      )
+      }
 
                     <textarea
                       className="study-textarea"

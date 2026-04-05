@@ -745,6 +745,83 @@ body {
 
 }
 
+.hintHistory-box {
+  display: flex;
+  flex-direction: column;
+
+
+  gap: 10px;
+  margin-bottom: 14px;
+
+}
+.hintHistory-title {
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #5b21b6;
+
+  margin: 0;
+
+
+
+}
+
+.hintHistory-card {
+
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 10px;
+
+
+  overflow: hidden;
+
+
+}
+
+.hintHistory-switch {
+  font-size: 14px;
+  font-weight: 600;
+
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+
+
+  background: none;
+  color: #6d28d9;
+
+
+  padding: 10px 14px;
+  cursor: pointer;
+
+
+
+}
+
+.hintHistory-main{
+  font-size: 14px;
+  color: #4c1d95;
+
+  border-top: 1px solid #ede9fe;
+
+  padding: 0px 14px 10px;
+
+
+}
+
+.hintHistory-time{
+  font-size: 12px;
+  color: #6d28d9;
+
+  margin-bottom: 5px;
+
+}
+.hintHistory-body{
+  font-size: 14px;
+  line-height: 20px;
+
+}
+
 
 
 
