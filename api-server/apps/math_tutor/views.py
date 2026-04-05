@@ -9,6 +9,11 @@ import json
 # Create your views here.
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
+@api_view(['GET'])
+def get_topics(request):
+    topics = Topic.objects.values_list('value', flat=True)
+    return Response(list(topics))
+
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def solve_math_problem(request):
