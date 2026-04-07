@@ -373,4 +373,44 @@ class AssignmentVersion(models.Model):
 # An object representing a single problem a student can work
 # TODO: may be redundant definition, check with team to see if similar model already used elsewhere and integrate 
 class Problem(models.Model):
-    pass
+    identifier = models.CharField(max_length=255, unique=True)
+
+    title = models.CharField(
+        max_length=255, 
+        blank=True
+        help_text="A brief, optional label for the problem. For example \"Problem 1: Linear Equations\" or \nPart 3\n"
+    )
+
+    prompt = models.TextField(
+        help_text="The main problem prompt or question to be presented to the student. This should include all necessary information for the student to understand the problem and attempt a solution."
+    )
+
+    source_type = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Optional field for documenting the source of the problem, ex) AI generation, textbook, teacher-written"
+    )
+
+    metadata = models.JSONField(
+        null=True, 
+        blank=True,
+        help_text="Additional metadata about the problem, if needed for generation, reporting etc."
+        )
+    
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_problems"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if self.identifier:
+            self.identifier = self.identifier.strip()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title or self.identifier
