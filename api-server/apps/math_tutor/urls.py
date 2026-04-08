@@ -6,5 +6,5 @@ urlpatterns = [
     path('solve_problem/', views.solve_math_problem),
     path('generate_hint/', views.generate_hint),
     path('grade_step/', views.grade_step),
-    path('api/v1/topics/', views.get_topics),
+    path('topics/', views.get_topics),
 ]
