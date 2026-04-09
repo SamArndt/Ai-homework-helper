@@ -822,6 +822,31 @@ body {
 
 }
 
+.hintProgress-header{
+
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  gap: 10px;
+
+}
+
+.hintProgress-toggle{
+  font-size: 8px;
+  font-weight: 600;
+
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  color: #5b21b6;
+
+  padding: 2px 8px;
+  cursor: pointer;
+
+
+}
+
 
 
 

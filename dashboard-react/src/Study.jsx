@@ -35,6 +35,7 @@ export default function Study() {
 
   const [hintHistory, setHintHistory] = useState([])
   const [openHintHistoryID, setOpenHintHistoryID] = useState(null)
+  const [showHintHistory, setShowHintHistory] = useState(true)
 
 
 
@@ -81,6 +82,7 @@ export default function Study() {
     setMode('solving')
     setHints([])
     setHintNumber(1)
+    setShowHintHistory(true)
 
     setHintHistory([])
     setOpenHintIndex(null)
@@ -89,6 +91,8 @@ export default function Study() {
     setWork('')
     setFeedback(null)
     setCurrentStepIndex(0)
+    setSolution(null)
+
     setSolutionLoading(true)
     try {
       const res = await fetch('/api/v1/solve_problem/', {
@@ -106,7 +110,7 @@ export default function Study() {
   }
 
   const fetchHint = async () => {
-    if (hintNumber > 3 || loadingHint) return
+    if (hintNumber > 3 || loadingHint || solutionLoading || !parsed) return
     setLoadingHint(true)
     try {
       const res = await fetch('/api/v1/generate_hint/', {
@@ -131,10 +135,15 @@ export default function Study() {
       
       };
 
-      setHints([...hints, newHint])
-      setHintHistory([newHintHistory, ...hintHistory]);
+      const nextHintIndex = hints.length;
+      const nextHints = [...hints, newHint]
+      const nextHintHistory = [newHintHistory, ...hintHistory]
+      
+      setHints(nextHints)
+      setOpenHintIndex(nextHintIndex)
+      setHintHistory(nextHintHistory);
       setHintNumber(hintNumber + 1)
-      setOpenHintIndex(hints.length)
+      
     } 
 
 
@@ -147,17 +156,16 @@ export default function Study() {
   }
 
   const validateStep = async () => {
-    if (!work.trim() || !solution) return
+    if (!work.trim() || !parsed) return
     setIsValidating(true)
-    const parsedSolution = parseSolution(solution)
-    const steps = parsedSolution?.steps || []
 
-  
     const isLastStep = currentStepIndex >= steps.length
 
     const target = isLastStep
-      ? { instruction: 'Final Answer', checkpoint: parsedSolution.finalAnswer }
+      ? { instruction: 'Final Answer', checkpoint: parsed.finalAnswer }
       : steps[currentStepIndex]
+
+
 
     try {
       const res = await fetch('/api/v1/grade_step/', {
@@ -176,7 +184,11 @@ export default function Study() {
         setWork('')
         setCurrentStepIndex((prev) => prev + 1)
         setFeedback({ ...result, success: true })
-      } else {
+        setHints([])
+        setHintNumber(1)
+        setOpenHintIndex(null);
+      } 
+      else {
         setFeedback({ ...result, success: false })
       }
     } catch {
@@ -194,7 +206,7 @@ export default function Study() {
 
   let currentStepHeader = ''
     if (currentStepIndex >= steps.length) {
-      currentStepHeader = 'Answer'
+      currentStepHeader = 'Final Answer'
     }
     else{
       currentStepHeader = 'Step ' + (currentStepIndex+1);
@@ -288,6 +300,8 @@ export default function Study() {
 
                   </div>
 
+
+
                     <div
                       style={{
                         display: 'flex',
@@ -302,19 +316,30 @@ export default function Study() {
                           textAlign: 'left',
                           margin: 0,
                           fontWeight: '700',
+                          flex: 1,
                         }}
                       >
-                        Step {currentStepIndex + 1}:{' '}
                         {parsed
                           ? currentStepIndex >= steps.length
                             ? 'Final Answer'
-                            : steps[currentStepIndex].instruction
+                            : `Step ${currentStepIndex + 1} : ${steps[currentStepIndex].instruction}`
                           : '...'}
                       </p>
-                      {hintNumber <= 3 && (
+
+                      <div className='hintProgress-header'>
+                        <button type='button'
+                                className='hintProgress-toggle'
+                                onClick={() => setShowHintHistory(!showHintHistory)}
+                        >
+                          {showHintHistory ? "Hide Hint History" : "Show Hint History"}
+                        </button>
+                      
+
+
+                      {hintNumber <= 3 && showHintHistory && (
                         <button
                           onClick={fetchHint}
-                          disabled={loadingHint}
+                          disabled={loadingHint || solutionLoading || !parsed}
                           style={{
                             background: 'none',
                             border: '1px solid #7c3aed',
@@ -324,14 +349,28 @@ export default function Study() {
                             fontSize: '0.7rem',
                             cursor: 'pointer',
                             fontWeight: 'bold',
+                            opacity: loadingHint || solutionLoading || !parsed ? 0.5 : 1,
                           }}
                         >
-                          {loadingHint ? '...' : `+ Hint (${4 - hintNumber})`}
+                          {solutionLoading ? 'Preparing...' : loadingHint 
+                                           ? '...' : `+ Hint (${4 - hintNumber})`}
                         </button>
                       )}
                     </div>
+                    </div>
 
-                    {hints.length > 0 && (
+                    {!showHintHistory && (
+                      <div className='hintProgress-collapse'>
+                        Hint History is Hidden
+                          {hintHistory.length > 0 ? ` | ${hintHistory.length} hint(s) already viewed` : ""}
+                      </div>
+                    )}
+
+
+
+
+
+                    {showHintHistory && hints.length > 0 && (
                       <div
                         style={{
                           display: 'flex',
@@ -389,7 +428,7 @@ export default function Study() {
                     )}
 
                     {
-                      hintHistory.length > 0 && (
+                      showHintHistory && hintHistory.length > 0 && (
                         <div className='hintHistory-box'>
                           <p className='hintHistory-title'> Hint History </p>
 
@@ -440,7 +479,12 @@ export default function Study() {
                       placeholder="Show your work for this step..."
                       rows={4}
                       value={work}
-                      onChange={(e) => setWork(e.target.value)}
+                      onChange={(e) => {
+                        setWork(e.target.value)
+
+                        if (feedback) setFeedback(null) }
+                      
+                      }
                     />
 
                     {feedback && (
