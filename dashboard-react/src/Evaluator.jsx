@@ -10,6 +10,7 @@ const DifficultyBadge = ({ difficulty }) => {
   )
 }
 
+
 const Evaluator = () => {
   const { token } = useContext(AuthContext)
 
@@ -33,6 +34,8 @@ const Evaluator = () => {
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState({})
   const [error, setError] = useState('')
+  const [filterSearch, setFilterSearch] = useState('')
+
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -48,6 +51,134 @@ const Evaluator = () => {
     }
     fetchTopics()
   }, [])
+
+  const topicShortcuts = {
+    'linear equations in slope-intercept form (y = mx + b)' : 
+    [
+      'slope',
+      'slope-intercept',
+      'y=',
+      'y =',
+      'y = mx+b',
+    ],
+    'linear equations in point-slope form': 
+    [
+      'slope',
+      'point slope',
+      'point-slope',
+      'linear',
+
+    ],
+    'linear equations in standard form': 
+    [
+      'slope',
+      'standard',
+      'linear equations',
+      'linear',
+
+    ],
+    'finding slope from two points': 
+    [
+      'two',
+      'two points',
+      'slope',
+      'points',
+      'find',
+
+    ],
+    'finding slope from a graph': 
+    [
+      'slope',
+      'slope graph',
+      'graph',
+      'graph slope',
+      'find',
+
+    ],
+    'solving systems by substitution': 
+    [
+      'substitution',
+      'system',
+      'system of equations',
+      'solve',
+
+    ],
+    'solving systems by elimination': 
+    [
+      'elimination',
+      'system',
+      'system of equations',
+      'solve',
+
+    ],
+    'quadratic equations and parabolas': 
+    [
+      'quadratic ',
+      'equations',
+      'parabolas',
+      'quadratics',
+
+    ],
+    'factoring quadratic expressions': 
+    [
+      'factoring',
+      'expressions',
+      'quadratic',
+      'quadratics',
+
+    ],
+
+    
+
+
+  }
+
+
+  const filtering = topics.filter((item) => {
+    
+  
+    let topicName = ''
+
+    if (typeof item === 'string') {
+      topicName = item;
+
+    }
+
+    else if (item.name) {
+      topicName = item.name;
+    }
+
+    else if (item.topic) {
+      topicName = item.topic;
+    }
+    
+    else if (item.id) {
+      topicName = item.id;
+    }
+
+    let topicNameLower = topicName.toLowerCase();
+    let topicNameText = filterSearch.toLowerCase();
+
+
+    if (topicNameLower.indexOf(topicNameText) !== -1) {
+      return true
+    }
+
+
+    const shortcut = topicShortcuts[topicName] || []
+          let i;
+          for (i = 0; i < shortcut.length; i++) {
+            const shorcutText = shortcut[i].toLowerCase()
+
+                if (shorcutText.indexOf(topicNameText) !== -1) {
+                  return true
+                }
+                  
+          }
+
+
+  })
+
 
   const handleTopicChange = async (e) => {
     const topic = e.target.value
@@ -117,27 +248,65 @@ const Evaluator = () => {
             <div className="eval-field">
               <label className="eval-field-label">Select a Topic</label>
               {loadingTopics ? (
+
                 <p className="eval-loading-text">Loading topics…</p>
               ) : (
+                <>
+                <input className='eval-select'
+                       type='text'
+                       placeholder='Search For a Topic...'
+                       value={filterSearch}
+                       onChange={(e) => {
+                        const newText = e.target.value 
+                        setFilterSearch(newText)
+                      
+                      }}
+                    />
+                  <p className='eval-loading-text'>
+                    {filtering.length} {' '}
+                    topic{filtering.length === 1 ? '' : 's'} found...
+                  </p>
+                
                 <select
                   className="eval-select"
                   value={selectedTopic}
+
                   onChange={handleTopicChange}
                   disabled={loadingQuiz}
                 >
                   <option value="">— Choose a topic —</option>
-                  {topics.map((t, i) => {
-                    const label =
-                      typeof t === 'string' ? t : (t.name ?? t.topic ?? t.id)
-                    const value =
-                      typeof t === 'string' ? t : (t.name ?? t.topic ?? t.id)
+
+                  {filtering.map((item, index) => {
+                    let evalLabel = ''
+                    let evalValue=''
+
+                        if (typeof item === 'string') {
+                          evalLabel = item
+                          evalValue = item
+                        }
+                        else if (item.name) {
+                          evalLabel = item.name
+                          evalValue = item.name
+                        }
+                        else if (item.topic) {
+                          evalLabel = item.topic
+                          evalValue = item.topic
+                        }
+                        else if (item.id) {
+                          evalLabel = item.id
+                          evalValue = item.id
+                        }
+
                     return (
-                      <option key={i} value={value}>
-                        {label}
+                      <option key={index} 
+                              value={evalValue}>
+                              {evalLabel}
                       </option>
+
                     )
                   })}
                 </select>
+            </>
               )}
             </div>
 
