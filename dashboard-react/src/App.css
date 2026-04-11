@@ -1031,3 +1031,55 @@ body {
   font-size: 0.85rem;
   color: #6d5a8a;
 }
+
+.eval-catRow {
+  display: flex;
+  flex-wrap: wrap;
+
+  margin-bottom: 5px;
+
+  gap: 7px;
+
+}
+
+.eval-active {
+  border: 1px solid #6b21a8;
+  background: #7c3aed;
+  color: #ffffff;
+  
+  opacity: 0.8;
+
+
+
+}
+
+.eval-notActive {
+  font-size: 9px;
+  font-weight: 500;
+
+  padding: 5px 8px;
+
+  border: 1px solid #ddd6fe;
+  background: #ddd6fe;
+  color: #6d28d9;
+}
+.eval-notActive:hover {
+  background: #ede9fe;
+}
+
+.eval-search {
+
+  font-size: 12px;
+
+  color: #3b1f6e;
+  background-color: #faf9ff;
+  border: 1px solid #ddd6fe;
+  outline: none;
+
+  padding: 8px 10px;
+
+
+
+
+  width: 100%;
+}
