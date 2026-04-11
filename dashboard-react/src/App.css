@@ -32,10 +32,8 @@ body {
 
 .nav-link-active {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.10);
-
-
-  box-shadow:inset  0 0 0 1px rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .nav-brand {
@@ -270,6 +268,7 @@ body {
 /* Title block */
 .study-title-block {
   text-align: center;
+  width: 100%;
 }
 
 .study-eyebrow {
@@ -486,7 +485,7 @@ body {
 
 /* ─── Problem Display ─── */
 .problem-box {
-  background: #f3f0ff; /* Very light purple to match your theme */
+  background: #f3f0ff;
   border: 1px solid #ddd6fe;
   border-radius: 16px;
   padding: 1.5rem;
@@ -495,7 +494,7 @@ body {
 }
 
 .problem-text {
-  color: #4c1d95; /* Deep purple for readability */
+  color: #4c1d95;
   font-size: 1rem;
   line-height: 1.6;
   font-weight: 500;
@@ -510,30 +509,19 @@ body {
   margin-bottom: 0.5rem;
 }
 
-
-
 .profile-outer {
   background: #8b5cf6;
   padding: 30px;
-
   min-height: calc(100vh - 84px);
 }
 
-
 .profile-inner {
-
   text-align: center;
-
   border: 1px solid #ddd6fe;
   border-radius: 30px;
-
-
   margin: 0 auto;
   padding: 50px;
-
-
   max-width: 1000px;
-  margin: 0 auto;
   background: #f5f3ff;
 }
 
@@ -541,174 +529,359 @@ body {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
-
   color: #8b5cf6;
-
-
   margin-bottom: 8px;
 }
 
 .profile-title {
   font-size: 30px;
   font-weight: 700;
-
   color: #6b46c1;
-
   margin-bottom: 8px;
-  
 }
 
 .profile-subtitle {
   font-size: 14px;
-
   color: #86868b;
   margin-bottom: 24px;
-  
 }
 
 .profile-grid {
   display: grid;
   gap: 20px;
-
   grid-template-columns: 1fr 1fr;
 }
 
 .profile-card {
   background: #ffffff;
-
   text-align: left;
-
   border: 1px solid #ddd6fe;
   border-radius: 16px;
   padding: 20px;
 }
+
 .profile-card-activity {
   grid-column: 1/3;
   width: 75%;
-
   margin: 0 auto;
-
   max-height: 200px;
   display: flex;
   flex-direction: column;
-
 }
+
 .profile-card-activity-expand {
   max-height: 600px;
 }
 
 .profile-activity-header {
-
-
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-
   gap: 1px;
   margin-bottom: 12px;
 }
 
 .profile-card-activity-dropdown {
-
   font-size: 12px;
   font-weight: 600;
   text-align: center;
-
   background: #ede9fe;
   color: #5b1a8a;
-
   border: 1px solid #c4b5fd;
   border-radius: 10px;
-
   padding: 15px 8px;
-
-
-
-
   cursor: pointer;
-
-
-
 }
+
 .profile-card-activity-dropdown:hover {
   background: #ddd6fe;
 }
 
 .profile-card-bodytext {
   font-size: 14px;
-
   color: #4b5563;
   background: #f8f5ff;
-
   border: 1px solid #ede9fe;
   border-radius: 10px;
-
-
   padding: 10px 14px;
 }
 
 .profile-activity-scroll {
   padding-right: 5px;
-
-
   overflow-y: auto;
   flex: 1;
-  
 }
+
 .profile-card-title {
-
   text-align: center;
-
-
   font-size: 15px;
   font-weight: 600;
-
   color: #6b46c1;
   margin-bottom: 16px;
-
-
-  
-
-
 }
+
 .profile-card-row {
   display: flex;
   border-bottom: 1px solid #ede9fe;
   justify-content: space-between;
-
   gap: 15px;
   padding: 12px 0;
 }
+
 .profile-card-label {
   font-size: 14px;
   font-weight: 600;
-
   color: #8b5cf6;
 }
+
 .profile-card-text {
   font-size: 12px;
   text-align: right;
-
   color: #4b5563;
 }
-
 
 .profile-null {
   font-size: 14px;
   text-align: center;
-
   color: #6b7280;
   margin-bottom: 12px;
 }
 
+/* ─── Evaluator ─── */
 
+/* Topic field wrapper */
+.eval-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
 
+.eval-field-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8b5cf6;
+}
 
+/* Topic dropdown */
+.eval-select {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 12px;
+  color: #3b1f6e;
+  background-color: #faf9ff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
 
+.eval-select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
 
+.eval-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
+/* Loading text */
+.eval-loading-text {
+  font-size: 0.875rem;
+  color: #a78bfa;
+  text-align: center;
+}
 
+/* Error banner */
+.eval-error {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  color: #991b1b;
+  font-weight: 500;
+}
 
+/* Spinner */
+.eval-spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 0;
+  gap: 0.75rem;
+}
 
+.eval-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #ede9fe;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: eval-spin 0.7s linear infinite;
+}
+
+@keyframes eval-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Topic meta */
+.eval-meta-facts {
+  margin-bottom: 0.75rem;
+}
+
+.eval-meta-line {
+  font-size: 0.8rem;
+  color: #6d5a8a;
+  line-height: 1.55;
+  margin-bottom: 0.5rem;
+}
+
+.eval-meta-line:last-child {
+  margin-bottom: 0;
+}
+
+.eval-meta-label {
+  color: #8b5cf6;
+}
+
+/* Questions list */
+.eval-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Individual question card */
+.eval-question {
+  background: #faf7ff;
+  border: 1.5px solid #ddd6fe;
+  border-left: 4px solid #7c3aed;
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.eval-question-correct {
+  background: #f0fdf4;
+  border-color: #86efac;
+  border-left-color: #22c55e;
+}
+
+.eval-question-wrong {
+  background: #fff7f7;
+  border-color: #fca5a5;
+  border-left-color: #ef4444;
+}
+
+.eval-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.eval-question-number {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8b5cf6;
+}
+
+.eval-question-text {
+  font-size: 0.9375rem;
+  color: #3b1f6e;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* Difficulty badges */
+.eval-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.eval-badge-easy {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.eval-badge-medium {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.eval-badge-hard {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Feedback block */
+.eval-feedback {
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.eval-feedback-correct {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+}
+
+.eval-feedback-wrong {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+}
+
+.eval-feedback-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.eval-feedback-correct .eval-feedback-title {
+  color: #166534;
+}
+
+.eval-feedback-wrong .eval-feedback-title {
+  color: #991b1b;
+}
+
+.eval-feedback-body {
+  font-size: 0.775rem;
+  line-height: 1.5;
+}
+
+.eval-feedback-correct .eval-feedback-body {
+  color: #166534;
+}
+
+.eval-feedback-wrong .eval-feedback-body {
+  color: #7f1d1d;
+}
+
+/* Score message under study-success */
+.eval-score-message {
+  font-size: 0.85rem;
+  color: #6d5a8a;
+}

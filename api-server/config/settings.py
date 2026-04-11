@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "users",
     "math_tutor",
+    "ai_evaluator",
     "request_id",
     "classroom",
 ]
