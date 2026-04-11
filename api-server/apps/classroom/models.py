@@ -377,8 +377,8 @@ class Problem(models.Model):
 
     title = models.CharField(
         max_length=255, 
-        blank=True
-        help_text="A brief, optional label for the problem. For example \"Problem 1: Linear Equations\" or \nPart 3\n"
+        blank=True,
+        help_text="A brief, optional label for the problem. For example \"Problem 1: Linear Equations\" or \nPart 3\n",
     )
 
     prompt = models.TextField(
