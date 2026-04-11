@@ -12,6 +12,7 @@ function parseSolution(raw) {
   }
 }
 
+
 export default function Study() {
   const { token } = useContext(AuthContext)
 
@@ -31,6 +32,17 @@ export default function Study() {
   const [feedback, setFeedback] = useState(null)
   const [isValidating, setIsValidating] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
+
+  const [hintHistory, setHintHistory] = useState([])
+  const [openHintHistoryID, setOpenHintHistoryID] = useState(null)
+  const [showHintHistory, setShowHintHistory] = useState(true)
+
+
+
+
+
+
+
 
   const getCsrfToken = () =>
     document.cookie
@@ -70,9 +82,17 @@ export default function Study() {
     setMode('solving')
     setHints([])
     setHintNumber(1)
+    setShowHintHistory(true)
+
+    setHintHistory([])
+    setOpenHintIndex(null)
+    setOpenHintHistoryID(null)
+
     setWork('')
     setFeedback(null)
     setCurrentStepIndex(0)
+    setSolution(null)
+
     setSolutionLoading(true)
     try {
       const res = await fetch('/api/v1/solve_problem/', {
@@ -90,7 +110,7 @@ export default function Study() {
   }
 
   const fetchHint = async () => {
-    if (hintNumber > 3 || loadingHint) return
+    if (hintNumber > 3 || loadingHint || solutionLoading || !parsed) return
     setLoadingHint(true)
     try {
       const res = await fetch('/api/v1/generate_hint/', {
@@ -100,10 +120,35 @@ export default function Study() {
       })
       const data = await res.json()
       const newHint = { number: data.hint_number, text: data.hint }
-      setHints([...hints, newHint])
+
+      const newHintHistory = {
+
+        hintID: Date.now().toString(),
+        hintLevel: 'Hint ' + data.hint_number,
+        hintStepHeader: 
+            currentStepIndex >= steps.length ? 'Final Answer' : 'Step ' + (currentStepIndex + 1),
+        hintTime: new Date().toLocaleString(),
+        hintText: data.hint,
+        stepIndex: currentStepIndex,
+
+
+      
+      };
+
+      const nextHintIndex = hints.length;
+      const nextHints = [...hints, newHint]
+      const nextHintHistory = [newHintHistory, ...hintHistory]
+      
+      setHints(nextHints)
+      setOpenHintIndex(nextHintIndex)
+      setHintHistory(nextHintHistory);
       setHintNumber(hintNumber + 1)
-      setOpenHintIndex(hints.length)
-    } catch {
+      
+    } 
+
+
+    
+    catch {
       console.error('Hint error')
     } finally {
       setLoadingHint(false)
@@ -111,15 +156,16 @@ export default function Study() {
   }
 
   const validateStep = async () => {
-    if (!work.trim() || !solution) return
+    if (!work.trim() || !parsed) return
     setIsValidating(true)
-    const parsedSolution = parseSolution(solution)
-    const steps = parsedSolution?.steps || []
+
     const isLastStep = currentStepIndex >= steps.length
 
     const target = isLastStep
-      ? { instruction: 'Final Answer', checkpoint: parsedSolution.finalAnswer }
+      ? { instruction: 'Final Answer', checkpoint: parsed.finalAnswer }
       : steps[currentStepIndex]
+
+
 
     try {
       const res = await fetch('/api/v1/grade_step/', {
@@ -138,7 +184,11 @@ export default function Study() {
         setWork('')
         setCurrentStepIndex((prev) => prev + 1)
         setFeedback({ ...result, success: true })
-      } else {
+        setHints([])
+        setHintNumber(1)
+        setOpenHintIndex(null);
+      } 
+      else {
         setFeedback({ ...result, success: false })
       }
     } catch {
@@ -150,7 +200,24 @@ export default function Study() {
 
   const parsed = parseSolution(solution)
   const steps = parsed?.steps || []
-  const isFinished = parsed && currentStepIndex > steps.length
+
+  const totalSteps = steps.length + 1;
+  const completedSteps = currentStepIndex;
+
+  let currentStepHeader = ''
+    if (currentStepIndex >= steps.length) {
+      currentStepHeader = 'Final Answer'
+    }
+    else{
+      currentStepHeader = 'Step ' + (currentStepIndex+1);
+  }
+
+  const progressAmount = (completedSteps / totalSteps) * 100;
+
+  const isFinished = parsed && currentStepIndex > steps.length;
+
+
+
 
   return (
     <div className="study-bg">
@@ -219,6 +286,22 @@ export default function Study() {
 
                 {!isFinished ? (
                   <>
+                  <div className='progress-header'>
+                    <p>Completed:        <strong>{completedSteps}</strong> of <strong>{totalSteps} </strong>steps... </p>
+                    <p>Current Step:     <strong>{currentStepHeader}</strong></p>
+
+                    <div className='progress-bar'>
+                      <div className='progress-bar-completed'
+                           style= {{ width: progressAmount + "% "}}
+                      >
+            
+                      </div>
+                    </div>
+
+                  </div>
+
+
+
                     <div
                       style={{
                         display: 'flex',
@@ -233,19 +316,30 @@ export default function Study() {
                           textAlign: 'left',
                           margin: 0,
                           fontWeight: '700',
+                          flex: 1,
                         }}
                       >
-                        Step {currentStepIndex + 1}:{' '}
                         {parsed
                           ? currentStepIndex >= steps.length
                             ? 'Final Answer'
-                            : steps[currentStepIndex].instruction
+                            : `Step ${currentStepIndex + 1} : ${steps[currentStepIndex].instruction}`
                           : '...'}
                       </p>
-                      {hintNumber <= 3 && (
+
+                      <div className='hintProgress-header'>
+                        <button type='button'
+                                className='hintProgress-toggle'
+                                onClick={() => setShowHintHistory(!showHintHistory)}
+                        >
+                          {showHintHistory ? "Hide Hint History" : "Show Hint History"}
+                        </button>
+                      
+
+
+                      {hintNumber <= 3 && showHintHistory && (
                         <button
                           onClick={fetchHint}
-                          disabled={loadingHint}
+                          disabled={loadingHint || solutionLoading || !parsed}
                           style={{
                             background: 'none',
                             border: '1px solid #7c3aed',
@@ -255,14 +349,28 @@ export default function Study() {
                             fontSize: '0.7rem',
                             cursor: 'pointer',
                             fontWeight: 'bold',
+                            opacity: loadingHint || solutionLoading || !parsed ? 0.5 : 1,
                           }}
                         >
-                          {loadingHint ? '...' : `+ Hint (${4 - hintNumber})`}
+                          {solutionLoading ? 'Preparing...' : loadingHint 
+                                           ? '...' : `+ Hint (${4 - hintNumber})`}
                         </button>
                       )}
                     </div>
+                    </div>
 
-                    {hints.length > 0 && (
+                    {!showHintHistory && (
+                      <div className='hintProgress-collapse'>
+                        Hint History is Hidden
+                          {hintHistory.length > 0 ? ` | ${hintHistory.length} hint(s) already viewed` : ""}
+                      </div>
+                    )}
+
+
+
+
+
+                    {showHintHistory && hints.length > 0 && (
                       <div
                         style={{
                           display: 'flex',
@@ -319,12 +427,64 @@ export default function Study() {
                       </div>
                     )}
 
+                    {
+                      showHintHistory && hintHistory.length > 0 && (
+                        <div className='hintHistory-box'>
+                          <p className='hintHistory-title'> Hint History </p>
+
+                            {hintHistory.map((hint) => (
+                              <div key={hint.hintID} 
+                                className='hintHistory-card'>
+
+
+                                  <button onClick={() => 
+                                    setOpenHintHistoryID(
+                                      openHintHistoryID === hint.hintID ? null : hint.hintID
+                                    )
+                                  }
+                          className='hintHistory-switch'
+                      >
+                          <span>
+                            {hint.hintStepHeader} | {hint.hintLevel}
+                          </span>
+
+                          <span>
+                            {openHintHistoryID === hint.hintID ? 'Close' : "Expand"}
+                          </span>
+                      </button>
+
+                          {openHintHistoryID === hint.hintID && (
+                            <div className='hintHistory-main'>
+                              <div className='hintHistory-time'>
+                                  Viewed AT: {hint.hintTime}
+                                </div>
+
+                                <div className='hintHistory-body'>
+                                  {hint.hintText}
+                                </div>
+                              </div>
+
+
+                          )}
+
+                 </div>
+              ))}
+
+        </div>
+      )
+      }
+
                     <textarea
                       className="study-textarea"
                       placeholder="Show your work for this step..."
                       rows={4}
                       value={work}
-                      onChange={(e) => setWork(e.target.value)}
+                      onChange={(e) => {
+                        setWork(e.target.value)
+
+                        if (feedback) setFeedback(null) }
+                      
+                      }
                     />
 
                     {feedback && (
