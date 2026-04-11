@@ -35,6 +35,7 @@ const Evaluator = () => {
   const [answers, setAnswers] = useState({})
   const [error, setError] = useState('')
   const [filterSearch, setFilterSearch] = useState('')
+  const [activeCat, setActiveCat] = useState('All')
 
 
   useEffect(() => {
@@ -133,6 +134,28 @@ const Evaluator = () => {
 
   }
 
+  const cats = [
+    "All",
+    "Slope",
+    "Systems",
+    "Quadratics",
+    "Polynomials",
+
+
+
+
+
+    "Other",
+
+
+
+
+  ]
+
+
+
+
+
 
   const filtering = topics.filter((item) => {
     
@@ -143,7 +166,6 @@ const Evaluator = () => {
       topicName = item;
 
     }
-
     else if (item.name) {
       topicName = item.name;
     }
@@ -158,6 +180,34 @@ const Evaluator = () => {
 
     let topicNameLower = topicName.toLowerCase();
     let topicNameText = filterSearch.toLowerCase();
+
+    if (activeCat === "Slope" && topicNameLower.indexOf('slope') === -1) {
+      return false;
+    }
+
+    if (activeCat === "Systems" && topicNameLower.indexOf('system') === -1) {
+      return false;
+    }
+    if (activeCat === "Quadratics" && topicNameLower.indexOf('quadratic') === -1) {
+      return false;
+    }
+    if (activeCat === "Polynomials" && topicNameLower.indexOf('polynomial') === -1) {
+      return false;
+    }
+
+    if (activeCat === "Other") {
+      if (
+        topicNameLower.indexOf('slope') !== -1 ||
+        topicNameLower.indexOf('system') !== -1 ||
+        topicNameLower.indexOf('quadratic') !== -1 ||
+        topicNameLower.indexOf('parabola') !== -1 ||
+        topicNameLower.indexOf('polynomial') !== -1 
+      ) 
+      {
+        return false;
+      }
+    }
+
 
 
     if (topicNameLower.indexOf(topicNameText) !== -1) {
@@ -252,7 +302,21 @@ const Evaluator = () => {
                 <p className="eval-loading-text">Loading topics…</p>
               ) : (
                 <>
-                <input className='eval-select'
+
+                <div className='eval-catRow'>
+                  {cats.map((item) => (
+                      <button key={item}
+                              type='button'
+                              className= { activeCat === item ? 'eval-active' : 'eval-notActive'}
+                              onClick={() => setActiveCat(item)}
+                              disabled = {loadingQuiz}
+                              >
+                                {item}
+                              </button>
+                  ))}
+          </div>
+
+                <input className='eval-search'
                        type='text'
                        placeholder='Search For a Topic...'
                        value={filterSearch}
