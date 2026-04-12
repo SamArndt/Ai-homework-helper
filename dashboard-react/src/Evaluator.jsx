@@ -2,8 +2,6 @@ import { useContext, useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { AuthContext } from './context/AuthContext'
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
 function parseSolution(raw) {
   if (!raw) return null
   if (typeof raw === 'object') return raw
@@ -30,8 +28,6 @@ const CorrectnessBadge = ({ isCorrect }) => (
     {isCorrect ? '✓ Correct' : '✗ Incorrect'}
   </span>
 )
-
-// ─── Practice Mode (mirrors Study.jsx solving flow) ──────────────────────────
 
 function PracticeMode({ problem, topic, onBack, getHeaders }) {
   const [solution, setSolution] = useState(null)
@@ -338,8 +334,6 @@ function PracticeMode({ problem, topic, onBack, getHeaders }) {
   )
 }
 
-// ─── Main Evaluator ──────────────────────────────────────────────────────────
-
 const Evaluator = () => {
   const { token } = useContext(AuthContext)
 
@@ -473,7 +467,6 @@ const Evaluator = () => {
     questions.length > 0 &&
     questions.every((q) => (answers[q.question_number] ?? '').trim() !== '')
 
-  // ── Render Practice mode ──
   if (practiceProb) {
     return (
       <PracticeMode
