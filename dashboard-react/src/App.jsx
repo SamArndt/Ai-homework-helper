@@ -11,6 +11,7 @@ import {
 import './App.css'
 import { AuthContext, AuthProvider } from './context/AuthContext'
 import Dashboard from './Dashboard'
+import Evaluator from './Evaluator'
 import Login from './Login'
 import Profile from './Profile'
 import ProtectedRoute from './ProtectedRoute'
@@ -40,6 +41,15 @@ function AppContent() {
                   }
                 >
                   Dashboard
+                </NavLink>
+
+                <NavLink
+                  to="/evaluator"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
+                  Evaluator
                 </NavLink>
 
                 <NavLink
@@ -130,6 +140,16 @@ function AppContent() {
             <ProtectedRoute>
               <div className="page-wrapper">
                 <Study />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/evaluator"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <Evaluator />
               </div>
             </ProtectedRoute>
           }
