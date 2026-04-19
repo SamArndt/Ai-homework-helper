@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
 from enum import IntEnum
@@ -295,7 +295,32 @@ class StudentReport(models.Model):
     )
 
     def create_or_append_student_report(self, student, id, data):
-        pass
+        
+    
+    @classmethod
+    @transaction.atomic
+    def create_or_append_student_report(cls, student, id, data, classroom=None, assignment=None):
+        """
+        Create a new StudentReport or append a problem attempt to an existing one.
+
+        Args:
+            student: User who owns the report.
+            id: Problem identifier.
+            data: Dict containing attempt data. Supported keys:
+                - response_data
+                - hints_used
+                - is_correct
+            classroom: Optional Classroom context.
+            assignment: Optional Assignment context.
+
+        Returns:
+            tuple[StudentReport, StudentReportProblem]
+        """
+
+        if not id:
+            raise ValueError("Problem identifier is required.")
+        
+        problem = Problem.objects.get(identifier=id)
 
 # An object describing a student's work on a problem. Each record is for one attempt at solving the problem.
 # For example, if a student works a problem as part of practice problems, then later the same problem is in an
