@@ -68,7 +68,7 @@ Return ONLY this JSON structure:
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('ai_evaluator', '0004_seed_check_evaluation_answers.py'),
+        ('ai_evaluator', '0004_seed_check_evaluation_answers'),
     ]
 
     operations = [
