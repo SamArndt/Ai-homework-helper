@@ -16,3 +16,11 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 def generate_practice_exam(request):
     topic = request.data.get("topic")
     return Response({"topic": topic, "quiz": process_chat("generate_practice_exam", {"topic": topic})})
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def check_exam_answers(request):
+    topic = request.data.get("topic")
+    questions = request.data.get("quiz")
+    answers = request.data.get("answers")
+    return Response({"topic": topic, "evaluation": process_chat("check-exam-answers", {"topic": topic, "questions": questions, "answers": answers})})
