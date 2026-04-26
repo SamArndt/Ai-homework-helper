@@ -9,8 +9,7 @@ const QUESTION_TYPE_LABELS = {
   integrated_set: 'Scenario',
 }
 
-function Badge({ type }) {
-  const labels = QUESTION_TYPE_LABELS
+function TypeBadge({ type }) {
   return (
     <span
       style={{
@@ -25,7 +24,17 @@ function Badge({ type }) {
         flexShrink: 0,
       }}
     >
-      {labels[type] || type}
+      {QUESTION_TYPE_LABELS[type] || type}
+    </span>
+  )
+}
+
+function CorrectnessBadge({ isCorrect }) {
+  return (
+    <span
+      className={`eval-badge ${isCorrect ? 'eval-badge-easy' : 'eval-badge-hard'}`}
+    >
+      {isCorrect ? '✓ Correct' : '✗ Incorrect'}
     </span>
   )
 }
@@ -58,29 +67,81 @@ function OptionButton({ label, selected, onClick, disabled }) {
   )
 }
 
-function ShortAnswerField({ value, onChange, disabled }) {
+function SubQuestion({ sq, value, onAnswer, disabled }) {
+  const { type, options } = sq
+
+  if (type === 'short_answer') {
+    return (
+      <textarea
+        className="study-textarea"
+        rows={4}
+        value={value || ''}
+        onChange={(e) => onAnswer(e.target.value)}
+        disabled={disabled}
+        placeholder="Write your answer here…"
+      />
+    )
+  }
+
+  if (type === 'multiple_select') {
+    const selected = value || []
+    return (
+      <div>
+        <p
+          style={{
+            fontSize: '0.75rem',
+            color: '#8b5cf6',
+            marginBottom: '0.5rem',
+            fontWeight: 600,
+          }}
+        >
+          Select all that apply
+        </p>
+        {options.map((opt) => {
+          const isSelected = selected.includes(opt)
+          return (
+            <OptionButton
+              key={opt}
+              label={opt}
+              selected={isSelected}
+              disabled={disabled}
+              onClick={() => {
+                const next = isSelected
+                  ? selected.filter((s) => s !== opt)
+                  : [...selected, opt]
+                onAnswer(next)
+              }}
+            />
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
-    <textarea
-      className="study-textarea"
-      rows={4}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      disabled={disabled}
-      placeholder="Write your answer here…"
-    />
+    <div>
+      {(options || []).map((opt) => (
+        <OptionButton
+          key={opt}
+          label={opt}
+          selected={value === opt}
+          disabled={disabled}
+          onClick={() => onAnswer(opt)}
+        />
+      ))}
+    </div>
   )
 }
 
-function QuestionCard({ question, index, answers, onAnswer }) {
-  const { type, prompt, options, scenario, sub_questions } = question
-  const answer = answers[question.id] || {}
+function QuestionCard({ question, index, answers, onAnswer, disabled }) {
+  const { type, prompt, scenario, sub_questions } = question
 
   if (type === 'integrated_set') {
     return (
       <div className="eval-question" style={{ gap: '1rem' }}>
         <div className="eval-question-header">
           <span className="eval-question-number">Scenario {index + 1}</span>
-          <Badge type="integrated_set" />
+          <TypeBadge type="integrated_set" />
         </div>
         <div
           style={{
@@ -108,7 +169,7 @@ function QuestionCard({ question, index, answers, onAnswer }) {
           </span>
           {scenario}
         </div>
-        {sub_questions.map((sq, si) => (
+        {sub_questions.map((sq) => (
           <div
             key={sq.id}
             style={{
@@ -140,6 +201,7 @@ function QuestionCard({ question, index, answers, onAnswer }) {
               sq={sq}
               value={answers[sq.id]}
               onAnswer={(val) => onAnswer(sq.id, val)}
+              disabled={disabled}
             />
           </div>
         ))}
@@ -151,70 +213,121 @@ function QuestionCard({ question, index, answers, onAnswer }) {
     <div className="eval-question">
       <div className="eval-question-header">
         <span className="eval-question-number">Question {index + 1}</span>
-        <Badge type={type} />
+        <TypeBadge type={type} />
       </div>
       <p className="eval-question-text">{prompt}</p>
       <SubQuestion
-        sq={{ ...question, id: question.id }}
+        sq={question}
         value={answers[question.id]}
         onAnswer={(val) => onAnswer(question.id, val)}
+        disabled={disabled}
       />
     </div>
   )
 }
 
-function SubQuestion({ sq, value, onAnswer }) {
-  const { type, options } = sq
-
-  if (type === 'short_answer') {
-    return <ShortAnswerField value={value || ''} onChange={onAnswer} />
-  }
-
-  if (type === 'multiple_select') {
-    const selected = value || []
-    return (
-      <div>
-        <p
-          style={{
-            fontSize: '0.75rem',
-            color: '#8b5cf6',
-            marginBottom: '0.5rem',
-            fontWeight: 600,
-          }}
-        >
-          Select all that apply
-        </p>
-        {options.map((opt) => {
-          const isSelected = selected.includes(opt)
-          return (
-            <OptionButton
-              key={opt}
-              label={opt}
-              selected={isSelected}
-              onClick={() => {
-                const next = isSelected
-                  ? selected.filter((s) => s !== opt)
-                  : [...selected, opt]
-                onAnswer(next)
-              }}
-            />
-          )
-        })}
-      </div>
-    )
-  }
-
-  // multiple_choice, true_false
+function ScoreBar({ score }) {
+  const pct = score?.percentage ?? 0
+  const color = pct >= 70 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444'
   return (
-    <div>
-      {(options || []).map((opt) => (
-        <OptionButton
-          key={opt}
-          label={opt}
-          selected={value === opt}
-          onClick={() => onAnswer(opt)}
+    <div
+      style={{
+        background: '#f5f3ff',
+        border: '1.5px solid #ddd6fe',
+        borderRadius: '16px',
+        padding: '1.25rem 1.5rem',
+        textAlign: 'center',
+      }}
+    >
+      <p
+        style={{
+          fontSize: '0.65rem',
+          fontWeight: 700,
+          letterSpacing: '0.13em',
+          textTransform: 'uppercase',
+          color: '#8b5cf6',
+          marginBottom: '0.75rem',
+        }}
+      >
+        Your Score
+      </p>
+      <div
+        style={{
+          fontSize: '2.75rem',
+          fontWeight: 700,
+          color,
+          marginBottom: '0.25rem',
+        }}
+      >
+        {pct}%
+      </div>
+      <p style={{ fontSize: '0.875rem', color: '#6d5a8a' }}>
+        {score?.earned} / {score?.total} correct
+      </p>
+      <div
+        style={{
+          height: '8px',
+          background: '#ede9fe',
+          borderRadius: '999px',
+          marginTop: '1rem',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${pct}%`,
+            background: color,
+            borderRadius: '999px',
+            transition: 'width 0.6s ease',
+          }}
         />
-      ))}
+      </div>
+    </div>
+  )
+}
+
+function EvalQuestionCard({ item, index }) {
+  const isCorrect = item.is_correct
+  return (
+    <div
+      className={`eval-question ${isCorrect ? 'eval-question-correct' : 'eval-question-wrong'}`}
+    >
+      <div className="eval-question-header">
+        <span className="eval-question-number">
+          {String(item.id).match(/[a-z]/i)
+            ? `Part ${item.id}`
+            : `Question ${index + 1}`}
+        </span>
+        <CorrectnessBadge isCorrect={isCorrect} />
+      </div>
+
+      <p className="eval-question-text">{item.prompt}</p>
+
+      <p className="eval-meta-line">
+        <strong className="eval-meta-label">Your answer: </strong>
+        {Array.isArray(item.student_answer)
+          ? item.student_answer.join(', ')
+          : item.student_answer || <em>No answer provided</em>}
+      </p>
+
+      {item.correct_answer && (
+        <p className="eval-meta-line">
+          <strong className="eval-meta-label">Correct answer: </strong>
+          {Array.isArray(item.correct_answer)
+            ? item.correct_answer.join(', ')
+            : item.correct_answer}
+        </p>
+      )}
+
+      <div
+        className={`eval-feedback ${isCorrect ? 'eval-feedback-correct' : 'eval-feedback-wrong'}`}
+      >
+        <p className="eval-feedback-title">
+          {isCorrect ? 'Great work!' : 'Review needed'}
+        </p>
+        <p className="eval-feedback-body">{item.explanation}</p>
+      </div>
     </div>
   )
 }
@@ -235,11 +348,40 @@ export default function ExamGenerator() {
   })
 
   const [topic, setTopic] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const [exam, setExam] = useState(null)
   const [answers, setAnswers] = useState({})
-  const [submitted, setSubmitted] = useState(false)
+  const [evaluation, setEvaluation] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [grading, setGrading] = useState(false)
+  const [error, setError] = useState('')
+
+  const totalAnswerable = exam
+    ? exam.exam_body.reduce(
+        (acc, q) =>
+          q.type === 'integrated_set'
+            ? acc + (q.sub_questions?.length || 0)
+            : acc + 1,
+        0,
+      )
+    : 0
+
+  const answeredCount = Object.keys(answers).filter((k) => {
+    const v = answers[k]
+    return Array.isArray(v) ? v.length > 0 : v && v.trim?.() !== ''
+  }).length
+
+  const handleAnswer = (questionId, value) => {
+    if (evaluation) return
+    setAnswers((prev) => ({ ...prev, [questionId]: value }))
+  }
+
+  const handleReset = () => {
+    setTopic('')
+    setExam(null)
+    setAnswers({})
+    setEvaluation(null)
+    setError('')
+  }
 
   const handleGenerate = async () => {
     if (!topic.trim()) return
@@ -247,7 +389,7 @@ export default function ExamGenerator() {
     setError('')
     setExam(null)
     setAnswers({})
-    setSubmitted(false)
+    setEvaluation(null)
 
     try {
       const res = await fetch('/api/v1/exam_generator/', {
@@ -258,13 +400,14 @@ export default function ExamGenerator() {
       if (!res.ok) throw new Error(`Server error: ${res.status}`)
       const data = await res.json()
 
-      // Support raw JSON or stringified quiz field
-      let parsed = data
+      let parsed
       if (typeof data.quiz === 'string') {
         const cleaned = data.quiz.replace(/```json|```/g, '').trim()
         parsed = JSON.parse(cleaned)
       } else if (data.quiz) {
         parsed = data.quiz
+      } else {
+        parsed = data
       }
 
       setExam(parsed)
@@ -275,29 +418,39 @@ export default function ExamGenerator() {
     }
   }
 
-  const handleAnswer = (questionId, value) => {
-    if (submitted) return
-    setAnswers((prev) => ({ ...prev, [questionId]: value }))
+  const handleSubmit = async () => {
+    if (!exam || answeredCount === 0) return
+    setGrading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/v1/check_exam_answers/', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          topic,
+          quiz: exam.exam_body,
+          answers,
+        }),
+      })
+      if (!res.ok) throw new Error(`Server error: ${res.status}`)
+      const data = await res.json()
+
+      let parsed
+      if (typeof data.evaluation === 'string') {
+        const cleaned = data.evaluation.replace(/```json|```/g, '').trim()
+        parsed = JSON.parse(cleaned)
+      } else {
+        parsed = data.evaluation
+      }
+
+      setEvaluation(parsed)
+    } catch (err) {
+      setError(err.message || 'Failed to grade exam. Please try again.')
+    } finally {
+      setGrading(false)
+    }
   }
-
-  const flatQuestions = exam
-    ? exam.exam_body.flatMap((q) =>
-        q.type === 'integrated_set' ? [q, ...(q.sub_questions || [])] : [q],
-      )
-    : []
-
-  const answeredCount = Object.keys(answers).filter((k) => {
-    const v = answers[k]
-    return Array.isArray(v) ? v.length > 0 : v && v.trim?.() !== ''
-  }).length
-
-  const totalAnswerable = exam
-    ? exam.exam_body.reduce((acc, q) => {
-        if (q.type === 'integrated_set')
-          return acc + (q.sub_questions?.length || 0)
-        return acc + 1
-      }, 0)
-    : 0
 
   return (
     <>
@@ -314,11 +467,13 @@ export default function ExamGenerator() {
             {/* Header */}
             <div className="study-title-block">
               <p className="study-eyebrow">Practice Exams</p>
-              <h1 className="study-title">Exam Generator</h1>
+              <h1 className="study-title">
+                {evaluation ? 'Exam Results' : 'Exam Generator'}
+              </h1>
             </div>
 
-            {/* Topic Input */}
-            {!exam && (
+            {/* ── PHASE 1: Topic input ── */}
+            {!exam && !loading && (
               <>
                 <div className="eval-field">
                   <label className="eval-field-label" htmlFor="topic-input">
@@ -331,7 +486,6 @@ export default function ExamGenerator() {
                     value={topic}
                     onChange={(e) => setTopic(e.target.value)}
                     placeholder="e.g. Maryland Bar Exam, AP Biology, Constitutional Law…"
-                    disabled={loading}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault()
@@ -340,34 +494,41 @@ export default function ExamGenerator() {
                     }}
                   />
                 </div>
-
-                {error && <div className="eval-error">{error}</div>}
-
+                {error && <div className="eval-error">⚠ {error}</div>}
                 <div className="study-buttons">
                   <button
                     className="study-btn-primary"
                     onClick={handleGenerate}
-                    disabled={loading || !topic.trim()}
+                    disabled={!topic.trim()}
                   >
-                    {loading ? 'Generating…' : 'Generate Exam'}
+                    Generate Exam
                   </button>
                 </div>
-
-                {loading && (
-                  <div className="eval-spinner-wrap">
-                    <div className="eval-spinner" />
-                    <p className="eval-loading-text">
-                      Building your exam on <em>{topic}</em>…
-                    </p>
-                  </div>
-                )}
               </>
             )}
 
-            {/* Exam Display */}
-            {exam && (
+            {/* ── Generating spinner ── */}
+            {loading && (
+              <div className="eval-spinner-wrap">
+                <div className="eval-spinner" />
+                <p className="eval-loading-text">
+                  Building your exam on <em>{topic}</em>…
+                </p>
+              </div>
+            )}
+
+            {/* ── Grading spinner ── */}
+            {grading && (
+              <div className="eval-spinner-wrap">
+                <div className="eval-spinner" />
+                <p className="eval-loading-text">Grading your answers…</p>
+              </div>
+            )}
+
+            {/* ── PHASE 2: Exam questions ── */}
+            {exam && !evaluation && !loading && !grading && (
               <>
-                {/* Exam meta bar */}
+                {/* Meta bar */}
                 <div
                   style={{
                     background: '#f5f3ff',
@@ -410,9 +571,8 @@ export default function ExamGenerator() {
                   </div>
                 </div>
 
-                {error && <div className="eval-error">{error}</div>}
+                {error && <div className="eval-error">⚠ {error}</div>}
 
-                {/* Questions */}
                 <div className="eval-questions">
                   {exam.exam_body.map((q, i) => (
                     <QuestionCard
@@ -421,56 +581,148 @@ export default function ExamGenerator() {
                       index={i}
                       answers={answers}
                       onAnswer={handleAnswer}
+                      disabled={false}
                     />
                   ))}
                 </div>
 
-                {/* Submission / progress */}
-                {!submitted ? (
-                  <div className="study-buttons">
-                    <button
-                      className="study-btn-primary"
-                      onClick={() => setSubmitted(true)}
-                      disabled={answeredCount === 0}
-                    >
-                      Submit Answers
-                    </button>
-                    <button
-                      className="study-btn-secondary"
-                      onClick={() => {
-                        setExam(null)
-                        setAnswers({})
-                        setError('')
+                <div className="study-buttons">
+                  <button
+                    className="study-btn-primary"
+                    onClick={handleSubmit}
+                    disabled={answeredCount === 0}
+                  >
+                    Submit &amp; Grade Exam
+                  </button>
+                  <button className="study-btn-secondary" onClick={handleReset}>
+                    ← New Exam
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* ── PHASE 3: Results ── */}
+            {evaluation && !grading && (
+              <>
+                {/* Score bar — calculated from breakdown, not API score field */}
+                {(() => {
+                  const breakdown = evaluation.question_breakdown || []
+                  const earned = breakdown.filter((q) => q.is_correct).length
+                  const total = breakdown.length
+                  const percentage =
+                    total > 0 ? Math.round((earned / total) * 100) : 0
+                  return <ScoreBar score={{ earned, total, percentage }} />
+                })()}
+
+                {/* Summary */}
+                <div className="study-problem">
+                  <p className="study-problem-label">Overall Feedback</p>
+                  <p className="study-problem-text">{evaluation.summary}</p>
+                </div>
+
+                {/* Strengths & Gaps */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      background: '#f0fdf4',
+                      border: '1px solid #bbf7d0',
+                      borderRadius: '12px',
+                      padding: '0.9rem 1rem',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        color: '#16a34a',
+                        marginBottom: '0.4rem',
                       }}
                     >
-                      ← New Exam
-                    </button>
+                      Strengths
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '0.85rem',
+                        color: '#166534',
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {evaluation.strengths}
+                    </p>
                   </div>
-                ) : (
+                  <div
+                    style={{
+                      background: '#fff7f7',
+                      border: '1px solid #fca5a5',
+                      borderRadius: '12px',
+                      padding: '0.9rem 1rem',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        color: '#dc2626',
+                        marginBottom: '0.4rem',
+                      }}
+                    >
+                      Areas to Review
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '0.85rem',
+                        color: '#7f1d1d',
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {evaluation.gaps}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Per-question breakdown */}
+                {evaluation.question_breakdown?.length > 0 && (
                   <>
-                    <div className="study-success">
-                      <span className="study-success-emoji">📋</span>
-                      <p className="study-success-title">Exam Submitted!</p>
-                      <p className="eval-score-message">
-                        You answered {answeredCount} of {totalAnswerable}{' '}
-                        questions.
-                      </p>
-                    </div>
-                    <div className="study-buttons">
-                      <button
-                        className="study-btn-secondary"
-                        onClick={() => {
-                          setExam(null)
-                          setAnswers({})
-                          setSubmitted(false)
-                          setError('')
-                        }}
-                      >
-                        ← Generate Another Exam
-                      </button>
+                    <p
+                      className="eval-field-label"
+                      style={{ marginTop: '0.5rem' }}
+                    >
+                      Question Breakdown
+                    </p>
+                    <div className="eval-questions">
+                      {evaluation.question_breakdown.map((item, i) => (
+                        <EvalQuestionCard key={item.id} item={item} index={i} />
+                      ))}
                     </div>
                   </>
                 )}
+
+                {error && <div className="eval-error">⚠ {error}</div>}
+
+                <div className="study-buttons">
+                  <button
+                    className="study-btn-secondary"
+                    onClick={() => {
+                      setEvaluation(null)
+                      setAnswers({})
+                    }}
+                  >
+                    Retake This Exam
+                  </button>
+                  <button className="study-btn-secondary" onClick={handleReset}>
+                    ← New Exam
+                  </button>
+                </div>
               </>
             )}
           </div>
