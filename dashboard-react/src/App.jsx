@@ -12,6 +12,7 @@ import './App.css'
 import { AuthContext, AuthProvider } from './context/AuthContext'
 import Dashboard from './Dashboard'
 import Evaluator from './Evaluator'
+import ExamGenerator from './ExamGenerator'
 import Login from './Login'
 import Profile from './Profile'
 import ProtectedRoute from './ProtectedRoute'
@@ -50,6 +51,15 @@ function AppContent() {
                   }
                 >
                   Evaluator
+                </NavLink>
+
+                <NavLink
+                  to="/exam_generator"
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link nav-link-active' : 'nav-link'
+                  }
+                >
+                  Practice Exams
                 </NavLink>
 
                 <NavLink
@@ -150,6 +160,16 @@ function AppContent() {
             <ProtectedRoute>
               <div className="page-wrapper">
                 <Evaluator />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/exam_generator"
+          element={
+            <ProtectedRoute>
+              <div className="page-wrapper">
+                <ExamGenerator />
               </div>
             </ProtectedRoute>
           }

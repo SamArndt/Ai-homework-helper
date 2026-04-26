@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     "math_tutor",
     "ai_evaluator",
     "request_id",
+    "exam_generator",
     "classroom",
 ]
 
