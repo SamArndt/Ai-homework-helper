@@ -25,4 +25,5 @@ urlpatterns = [
     path("api/v1/", include("users.urls")),
     path("api/v1/", include("math_tutor.urls")),
     path("api/v1/", include("ai_evaluator.urls")),
+    path("api/v1/", include("exam_generator.urls")),
 ]
