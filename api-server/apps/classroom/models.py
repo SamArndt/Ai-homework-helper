@@ -293,9 +293,6 @@ class StudentReport(models.Model):
         related_name="student_reports",
         blank=True,
     )
-
-    def create_or_append_student_report(self, student, id, data):
-        
     
     @classmethod
     @transaction.atomic
